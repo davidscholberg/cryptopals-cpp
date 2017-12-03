@@ -4,13 +4,13 @@ CPPFLAGS=-Wall -std=c++14 -I .
 all: cryptopals
 
 cryptopals: cryptopals.o cryptotools/cryptotools.o
-	$(CPP) $(CPPFLAGS) cryptopals.o cryptotools/cryptotools.o -o cryptopals
+	$(CPP) $(CPPFLAGS) $^ -o $@
 
 cryptopals.o: cryptopals.cpp cryptotools/cryptotools.hpp
-	$(CPP) $(CPPFLAGS) -c cryptopals.cpp -o cryptopals.o
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 cryptotools/cryptotools.o: cryptotools/cryptotools.cpp cryptotools/cryptotools.hpp
-	$(CPP) $(CPPFLAGS) -c cryptotools/cryptotools.cpp -o cryptotools/cryptotools.o
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;
