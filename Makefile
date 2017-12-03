@@ -1,14 +1,16 @@
-PROJECT_ROOT = .
+CPP=g++
+CPPFLAGS=-std=c++14 -I .
 
-all: build
+all: cryptopals
 
-build:
-	g++ \
-		-std=c++14 \
-		-I ${PROJECT_ROOT} \
-		s01c01.cpp \
-		${PROJECT_ROOT}/cryptotools/*.cpp \
-		-o s01c01
+cryptopals: cryptopals.o cryptotools/cryptotools.o
+	$(CPP) $(CPPFLAGS) cryptopals.o cryptotools/cryptotools.o -o cryptopals
+
+cryptopals.o: cryptopals.cpp cryptotools/cryptotools.hpp
+	$(CPP) $(CPPFLAGS) -c cryptopals.cpp -o cryptopals.o
+
+cryptotools/cryptotools.o: cryptotools/cryptotools.cpp cryptotools/cryptotools.hpp
+	$(CPP) $(CPPFLAGS) -c cryptotools/cryptotools.cpp -o cryptotools/cryptotools.o
 
 retab:
 	find ${PROJECT_ROOT} -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;
