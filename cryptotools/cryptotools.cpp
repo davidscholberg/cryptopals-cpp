@@ -19,7 +19,7 @@ std::shared_ptr<std::vector<unsigned char>> cryptotools::hex_to_binary(const std
     static const std::string hex_values("0123456789abcdef");
     auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str->length() / 2);
 
-    for (int i = 0; i < buffer->size(); i++) {
+    for (unsigned int i = 0; i < buffer->size(); i++) {
         int hex_str_index = i * 2;
         auto binary_val = hex_values.find((*hex_str)[hex_str_index]);
         if (binary_val == std::string::npos) {
@@ -55,7 +55,7 @@ std::shared_ptr<std::string> cryptotools::binary_to_base64(const std::shared_ptr
 
     int base64_str_index = 0;
 
-    for (int i = 0; i < buffer->size(); i += 3) {
+    for (unsigned int i = 0; i < buffer->size(); i += 3) {
         // first 6-bit group
         char binary_val = (*buffer)[i] >> 2;
         (*base64_str)[base64_str_index] = base64_values[binary_val];
