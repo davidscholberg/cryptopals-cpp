@@ -1,5 +1,9 @@
 #include "cryptotools/cryptotools.hpp"
 
+namespace cryptotools {
+    const std::string hex_values("0123456789abcdef");
+}
+
 std::shared_ptr<std::string> cryptotools::hex_to_base64(const std::shared_ptr<std::string> hex_str) {
     return binary_to_base64(hex_to_binary(hex_str));
 }
@@ -16,19 +20,18 @@ std::shared_ptr<std::vector<unsigned char>> cryptotools::hex_to_binary(const std
         return nullptr;
     }
 
-    static const std::string hex_values("0123456789abcdef");
     auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str->length() / 2);
 
     for (unsigned int i = 0; i < buffer->size(); i++) {
         int hex_str_index = i * 2;
-        auto binary_val = hex_values.find((*hex_str)[hex_str_index]);
+        auto binary_val = cryptotools::hex_values.find((*hex_str)[hex_str_index]);
         if (binary_val == std::string::npos) {
             return nullptr;
         }
         (*buffer)[i] = binary_val << 4;
 
         hex_str_index++;
-        binary_val = hex_values.find((*hex_str)[hex_str_index]);
+        binary_val = cryptotools::hex_values.find((*hex_str)[hex_str_index]);
         if (binary_val == std::string::npos) {
             return nullptr;
         }
@@ -91,4 +94,49 @@ std::shared_ptr<std::string> cryptotools::binary_to_base64(const std::shared_ptr
     }
 
     return base64_str;
+}
+
+/**
+ * Returns nullptr if buffer is a nullptr.
+ */
+std::shared_ptr<std::string> cryptotools::binary_to_hex(const std::shared_ptr<std::vector<unsigned char>> buffer) {
+    if (!buffer) {
+        return nullptr;
+    }
+
+    auto hex_str = std::make_shared<std::string>(buffer->size() * 2, '0');
+
+    for (unsigned int i = 0; i < buffer->size(); i++) {
+        // first 4-bit group
+        char binary_val = (*buffer)[i] >> 4;
+        (*hex_str)[i * 2] = cryptotools::hex_values[binary_val];
+
+        // second 4-bit group
+        binary_val = (*buffer)[i] & 0b00001111;
+        (*hex_str)[i * 2 + 1] = cryptotools::hex_values[binary_val];
+    }
+
+    return hex_str;
+}
+
+/**
+ * Returns nullptr if either buffer is a nullptr or if they don't have equal sizes.
+ */
+std::shared_ptr<std::vector<unsigned char>> cryptotools::xor_bytes(
+        const std::shared_ptr<std::vector<unsigned char>> buffer_a,
+        const std::shared_ptr<std::vector<unsigned char>> buffer_b) {
+    if (!buffer_a || !buffer_b) {
+        return nullptr;
+    }
+    if (buffer_a->size() != buffer_b->size()) {
+        return nullptr;
+    }
+
+    auto xor_buffer = std::make_shared<std::vector<unsigned char>>(buffer_a->size());
+
+    for (unsigned int i = 0; i < xor_buffer->size(); i++) {
+        (*xor_buffer)[i] = (*buffer_a)[i] ^ (*buffer_b)[i];
+    }
+
+    return xor_buffer;
 }

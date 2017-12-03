@@ -3,9 +3,11 @@ CPPFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
 		cryptotools/cryptotools.o \
-		challenges/s01c01-hex-to-base64.o
+		challenges/s01c01-hex-to-base64.o \
+		challenges/s01c02-fixed-xor.o
 CHALLENGE_HEADERS=\
-		challenges/s01c01-hex-to-base64.hpp
+		challenges/s01c01-hex-to-base64.hpp \
+		challenges/s01c02-fixed-xor.hpp
 
 all: cryptopals
 
