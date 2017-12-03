@@ -1,21 +1,26 @@
+#include <functional>
 #include <iostream>
+#include <unordered_map>
 
-#include "cryptotools/cryptotools.hpp"
+#include "challenges/s01c01-hex-to-base64.hpp"
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        std::cerr << "usage: " << argv[0] << " <hex-string>" << std::endl;
+    if (argc < 2) {
+        std::cerr << "usage: " << argv[0] << " s<set-number>c<challenge-number> [args]" << std::endl;
+        std::cerr << "e.g: " << argv[0] << " s01c01 deadbeef" << std::endl;
         return 1;
     }
 
-    auto hex_str = std::make_shared<std::string>(argv[1]);
-    auto base64_str = cryptotools::hex_to_base64(hex_str);
+    std::unordered_map<std::string, std::function<int(int, char**)>> function_map = {
+        {s01::c01::challenge_arg, s01::c01::hex_to_base64},
+    };
 
-    if (!base64_str) {
-        std::cerr << "error: couldn't convert arg to base64" << std::endl;
+    auto challenge_func = function_map.find(argv[1]);
+
+    if (challenge_func == function_map.end()) {
+        std::cerr << "error: couldn't find challenge " << argv[1] << std::endl;
         return 2;
     }
 
-    std::cout << "hex: " << *hex_str << std::endl;
-    std::cout << "base64: " << *base64_str << std::endl;
+    return challenge_func->second(argc, argv);
 }
