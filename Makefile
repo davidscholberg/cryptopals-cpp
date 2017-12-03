@@ -9,7 +9,7 @@ cryptopals: cryptopals.o cryptotools/cryptotools.o
 cryptopals.o: cryptopals.cpp cryptotools/cryptotools.hpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-cryptotools/cryptotools.o: cryptotools/cryptotools.cpp cryptotools/cryptotools.hpp
+%.o: %.cpp %.hpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 clean:
