@@ -2,7 +2,7 @@ CPP=g++
 CPPFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
-		cryptotools/cryptotools.o \
+		wecrypt/wecrypt.o \
 		challenges/s01c01-hex-to-base64.o \
 		challenges/s01c02-fixed-xor.o \
 		challenges/s01c03-single-byte-xor.o
@@ -19,10 +19,10 @@ cryptopals: $(OBJECTS)
 cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-cryptotools/cryptotools.o: cryptotools/cryptotools.cpp cryptotools/cryptotools.hpp
+wecrypt/wecrypt.o: wecrypt/wecrypt.cpp wecrypt/wecrypt.hpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-%.o: %.cpp %.hpp cryptotools/cryptotools.hpp
+%.o: %.cpp %.hpp wecrypt/wecrypt.hpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 clean:

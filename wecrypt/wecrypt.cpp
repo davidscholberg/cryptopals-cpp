@@ -5,9 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "cryptotools/cryptotools.hpp"
+#include "wecrypt/wecrypt.hpp"
 
-namespace cryptotools {
+namespace wecrypt {
     const std::vector<char> base64_char_list = {
         {'A'}, {'B'}, {'C'}, {'D'},
         {'E'}, {'F'}, {'G'}, {'H'},

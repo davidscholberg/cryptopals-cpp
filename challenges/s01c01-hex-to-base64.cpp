@@ -2,7 +2,7 @@
 #include <string>
 
 #include "challenges/s01c01-hex-to-base64.hpp"
-#include "cryptotools/cryptotools.hpp"
+#include "wecrypt/wecrypt.hpp"
 
 const std::string s01::c01::challenge_arg("s01c01");
 
@@ -13,7 +13,7 @@ int s01::c01::hex_to_base64(int argc, char **argv) {
     }
 
     auto hex_str = std::make_shared<std::string>(argv[2]);
-    auto base64_str = cryptotools::hex_to_base64(hex_str);
+    auto base64_str = wecrypt::hex_to_base64(hex_str);
 
     if (!base64_str) {
         std::cerr << "error: couldn't convert arg to base64" << std::endl;

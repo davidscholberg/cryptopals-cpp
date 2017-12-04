@@ -2,7 +2,7 @@
 #include <string>
 
 #include "challenges/s01c02-fixed-xor.hpp"
-#include "cryptotools/cryptotools.hpp"
+#include "wecrypt/wecrypt.hpp"
 
 const std::string s01::c02::challenge_arg("s01c02");
 
@@ -21,22 +21,22 @@ int s01::c02::fixed_xor(int argc, char **argv) {
     auto hex_str_a = std::make_shared<std::string>(argv[2]);
     auto hex_str_b = std::make_shared<std::string>(argv[3]);
 
-    auto hex_bytes_a = cryptotools::hex_to_binary(hex_str_a);
-    auto hex_bytes_b = cryptotools::hex_to_binary(hex_str_b);
+    auto hex_bytes_a = wecrypt::hex_to_binary(hex_str_a);
+    auto hex_bytes_b = wecrypt::hex_to_binary(hex_str_b);
 
     if (!hex_bytes_a || !hex_bytes_b) {
         std::cerr << "error: invalid hex in args" << std::endl;
         return 2;
     }
 
-    auto xor_bytes = cryptotools::xor_bytes(hex_bytes_a, hex_bytes_b);
+    auto xor_bytes = wecrypt::xor_bytes(hex_bytes_a, hex_bytes_b);
 
     if (!xor_bytes) {
         std::cerr << "error: couldn't xor args" << std::endl;
         return 2;
     }
 
-    auto xor_str = cryptotools::binary_to_hex(xor_bytes);
+    auto xor_str = wecrypt::binary_to_hex(xor_bytes);
 
     if (!xor_str) {
         std::cerr << "error: couldn't convert xor to hex" << std::endl;
