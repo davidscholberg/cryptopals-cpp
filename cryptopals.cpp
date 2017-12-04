@@ -4,6 +4,7 @@
 
 #include "challenges/s01c01-hex-to-base64.hpp"
 #include "challenges/s01c02-fixed-xor.hpp"
+#include "challenges/s01c03-single-byte-xor.hpp"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -15,6 +16,7 @@ int main(int argc, char **argv) {
     std::unordered_map<std::string, std::function<int(int, char**)>> function_map = {
         {s01::c01::challenge_arg, s01::c01::hex_to_base64},
         {s01::c02::challenge_arg, s01::c02::fixed_xor},
+        {s01::c03::challenge_arg, s01::c03::single_byte_xor},
     };
 
     auto challenge_func = function_map.find(argv[1]);
