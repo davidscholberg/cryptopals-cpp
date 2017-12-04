@@ -8,7 +8,36 @@
 #include "cryptotools/cryptotools.hpp"
 
 namespace cryptotools {
-    const std::string hex_values("0123456789abcdef");
+    const std::vector<char> base64_char_list = {
+        {'A'}, {'B'}, {'C'}, {'D'},
+        {'E'}, {'F'}, {'G'}, {'H'},
+        {'I'}, {'J'}, {'K'}, {'L'},
+        {'M'}, {'N'}, {'O'}, {'P'},
+        {'Q'}, {'R'}, {'S'}, {'T'},
+        {'U'}, {'V'}, {'W'}, {'X'},
+        {'Y'}, {'Z'}, {'a'}, {'b'},
+        {'c'}, {'d'}, {'e'}, {'f'},
+        {'g'}, {'h'}, {'i'}, {'j'},
+        {'k'}, {'l'}, {'m'}, {'n'},
+        {'o'}, {'p'}, {'q'}, {'r'},
+        {'s'}, {'t'}, {'u'}, {'v'},
+        {'w'}, {'x'}, {'y'}, {'z'},
+        {'0'}, {'1'}, {'2'}, {'3'},
+        {'4'}, {'5'}, {'6'}, {'7'},
+        {'8'}, {'9'}, {'+'}, {'/'},
+    };
+    const std::vector<char> hex_char_list = {
+        {'0'}, {'1'}, {'2'}, {'3'},
+        {'4'}, {'5'}, {'6'}, {'7'},
+        {'8'}, {'9'}, {'a'}, {'b'},
+        {'c'}, {'d'}, {'e'}, {'f'},
+    };
+    const std::unordered_map<char, unsigned char> hex_val_map = {
+        {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},
+        {'4', 4},  {'5', 5},  {'6', 6},  {'7', 7},
+        {'8', 8},  {'9', 9},  {'a', 10}, {'b', 11},
+        {'c', 12}, {'d', 13}, {'e', 14}, {'f', 15},
+    };
     const std::unordered_map<char, float> letter_freq = {
         {'a', 8.167},
         {'b', 1.492},
@@ -59,18 +88,18 @@ namespace cryptotools {
 
         for (unsigned int i = 0; i < buffer->size(); i++) {
             int hex_str_index = i * 2;
-            auto binary_val = hex_values.find((*hex_str)[hex_str_index]);
-            if (binary_val == std::string::npos) {
+            auto binary_val = hex_val_map.find((*hex_str)[hex_str_index]);
+            if (binary_val == hex_val_map.end()) {
                 return nullptr;
             }
-            (*buffer)[i] = binary_val << 4;
+            (*buffer)[i] = binary_val->second << 4;
 
             hex_str_index++;
-            binary_val = hex_values.find((*hex_str)[hex_str_index]);
-            if (binary_val == std::string::npos) {
+            binary_val = hex_val_map.find((*hex_str)[hex_str_index]);
+            if (binary_val == hex_val_map.end()) {
                 return nullptr;
             }
-            (*buffer)[i] |= binary_val;
+            (*buffer)[i] |= binary_val->second;
         }
 
         return buffer;
@@ -84,7 +113,6 @@ namespace cryptotools {
             return nullptr;
         }
 
-        static const std::string base64_values("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
         static const char padding_char = '=';
 
         // base64 string size is buffer size * 3/4 rounded up to next multiple of 4
@@ -96,7 +124,7 @@ namespace cryptotools {
         for (unsigned int i = 0; i < buffer->size(); i += 3) {
             // first 6-bit group
             char binary_val = (*buffer)[i] >> 2;
-            (*base64_str)[base64_str_index] = base64_values[binary_val];
+            (*base64_str)[base64_str_index] = base64_char_list[binary_val];
 
             // second 6-bit group
             base64_str_index++;
@@ -104,7 +132,7 @@ namespace cryptotools {
             if (i + 1 < buffer->size()) {
                 binary_val |= (*buffer)[i + 1] >> 4;
             }
-            (*base64_str)[base64_str_index] = base64_values[binary_val];
+            (*base64_str)[base64_str_index] = base64_char_list[binary_val];
             if (i + 1 >= buffer->size()) {
                 break;
             }
@@ -115,7 +143,7 @@ namespace cryptotools {
             if (i + 2 < buffer->size()) {
                 binary_val |= (*buffer)[i + 2] >> 6;
             }
-            (*base64_str)[base64_str_index] = base64_values[binary_val];
+            (*base64_str)[base64_str_index] = base64_char_list[binary_val];
             if (i + 2 >= buffer->size()) {
                 break;
             }
@@ -123,7 +151,7 @@ namespace cryptotools {
             // fourth 6-bit group
             base64_str_index++;
             binary_val = (*buffer)[i + 2] & 0b00111111;
-            (*base64_str)[base64_str_index] = base64_values[binary_val];
+            (*base64_str)[base64_str_index] = base64_char_list[binary_val];
 
             base64_str_index++;
         }
@@ -144,11 +172,11 @@ namespace cryptotools {
         for (unsigned int i = 0; i < buffer->size(); i++) {
             // first 4-bit group
             char binary_val = (*buffer)[i] >> 4;
-            (*hex_str)[i * 2] = hex_values[binary_val];
+            (*hex_str)[i * 2] = hex_char_list[binary_val];
 
             // second 4-bit group
             binary_val = (*buffer)[i] & 0b00001111;
-            (*hex_str)[i * 2 + 1] = hex_values[binary_val];
+            (*hex_str)[i * 2 + 1] = hex_char_list[binary_val];
         }
 
         return hex_str;
@@ -159,11 +187,11 @@ namespace cryptotools {
 
         // first 4-bit group
         char binary_val = byte >> 4;
-        (*hex_str)[0] = hex_values[binary_val];
+        (*hex_str)[0] = hex_char_list[binary_val];
 
         // second 4-bit group
         binary_val = byte & 0b00001111;
-        (*hex_str)[1] = hex_values[binary_val];
+        (*hex_str)[1] = hex_char_list[binary_val];
 
         return hex_str;
     }
