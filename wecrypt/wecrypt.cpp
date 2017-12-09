@@ -282,11 +282,56 @@ namespace wecrypt {
         return scores;
     }
 
+    std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
+            const std::shared_ptr<std::vector<std::string>> hex_strs) {
+        if (!hex_strs) {
+            return nullptr;
+        }
+
+        auto scores = std::make_shared<std::vector<xor_byte_scores>>();
+
+        for (unsigned int i = 0; i < hex_strs->size(); i++) {
+            auto hex_str = std::make_shared<std::string>((*hex_strs)[i]);
+
+            auto hex_bytes = wecrypt::hex_to_binary(hex_str);
+
+            if (!hex_bytes) {
+                return nullptr;
+            }
+
+            auto xor_scores = wecrypt::break_xor_single_byte(hex_bytes);
+
+            if (!xor_scores) {
+                return nullptr;
+            }
+
+            scores->push_back({i, xor_scores});
+        }
+
+        std::sort(scores->begin(), scores->end(), xor_byte_scores::rcompare);
+
+        return scores;
+    }
+
     bool xor_byte_score::compare(xor_byte_score i, xor_byte_score j) {
         return i.score < j.score;
     }
 
     bool xor_byte_score::rcompare(xor_byte_score i, xor_byte_score j) {
         return j.score < i.score;
+    }
+
+    bool xor_byte_scores::compare(xor_byte_scores i, xor_byte_scores j) {
+        if (!i.scores->empty() && !j.scores->empty()) {
+            return xor_byte_score::compare((*i.scores)[0], (*j.scores)[0]);
+        }
+        return i.scores->empty();
+    }
+
+    bool xor_byte_scores::rcompare(xor_byte_scores i, xor_byte_scores j) {
+        if (!i.scores->empty() && !j.scores->empty()) {
+            return xor_byte_score::rcompare((*i.scores)[0], (*j.scores)[0]);
+        }
+        return j.scores->empty();
     }
 }

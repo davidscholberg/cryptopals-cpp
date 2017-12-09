@@ -28,6 +28,15 @@ namespace wecrypt {
     float score_english(const std::shared_ptr<std::vector<unsigned char>> buffer);
     std::shared_ptr<std::vector<xor_byte_score>> break_xor_single_byte(
             const std::shared_ptr<std::vector<unsigned char>> buffer);
+
+    struct xor_byte_scores {
+        unsigned int index;
+        std::shared_ptr<std::vector<xor_byte_score>> scores;
+        static bool compare(xor_byte_scores i, xor_byte_scores j);
+        static bool rcompare(xor_byte_scores i, xor_byte_scores j);
+    };
+    std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
+            const std::shared_ptr<std::vector<std::string>> hex_strs);
 }
 
 #endif // WECRYPT_HPP_
