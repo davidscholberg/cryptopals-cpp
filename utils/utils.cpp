@@ -9,8 +9,8 @@
 #include "utils/utils.hpp"
 
 namespace utils {
-    std::shared_ptr<std::string> get_file_contents(std::shared_ptr<std::string> filename) {
-        std::ifstream in(*filename, std::ios::in | std::ios::binary);
+    std::shared_ptr<std::string> get_file_contents(const std::string &filename) {
+        std::ifstream in(filename, std::ios::in | std::ios::binary);
 
         if (!in) {
             return nullptr;
@@ -26,8 +26,8 @@ namespace utils {
         return contents;
     }
 
-    std::shared_ptr<std::vector<std::string>> get_lines(std::shared_ptr<std::string> filename) {
-        std::ifstream in(*filename, std::ios::in | std::ios::binary);
+    std::shared_ptr<std::vector<std::string>> get_lines(const std::string &filename) {
+        std::ifstream in(filename, std::ios::in | std::ios::binary);
 
         if (!in) {
             return nullptr;
@@ -50,10 +50,10 @@ namespace utils {
         return lines;
     }
 
-    std::shared_ptr<std::string> hexdump(std::shared_ptr<std::vector<unsigned char>> bytes) {
+    std::shared_ptr<std::string> hexdump(const std::vector<unsigned char> &bytes) {
         auto hexdump_str = std::make_shared<std::string>();
         unsigned int offset = 0;
-        while (offset < bytes->size()) {
+        while (offset < bytes.size()) {
             std::stringstream address;
             std::stringstream hex;
             std::stringstream ascii;
@@ -63,18 +63,18 @@ namespace utils {
                 if (i % 8 == 0) {
                     hex << " ";
                 }
-                if (offset >= bytes->size()) {
+                if (offset >= bytes.size()) {
                     hex << "   ";
                     ascii << " ";
                     continue;
                 }
                 hex << " ";
-                hex << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)(*bytes)[offset];
+                hex << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)bytes[offset];
 
-                if((*bytes)[offset] < 32) {
+                if(bytes[offset] < 32) {
                     ascii << '.';
                 } else {
-                    ascii << (*bytes)[offset];
+                    ascii << bytes[offset];
                 }
                 offset++;
             }

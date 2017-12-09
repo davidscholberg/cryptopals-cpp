@@ -18,7 +18,7 @@ int s01::c03::single_byte_xor(int argc, char **argv) {
         return 1;
     }
 
-    auto hex_str = std::make_shared<std::string>(argv[2]);
+    std::string hex_str(argv[2]);
 
     auto hex_bytes = wecrypt::hex_to_binary(hex_str);
 
@@ -27,19 +27,14 @@ int s01::c03::single_byte_xor(int argc, char **argv) {
         return 2;
     }
 
-    auto xor_scores = wecrypt::break_xor_single_byte(hex_bytes);
+    auto xor_scores = wecrypt::break_xor_single_byte(*hex_bytes);
 
-    if (!xor_scores) {
-        std::cerr << "error: couldn't get xor scores" << std::endl;
-        return 2;
-    }
-
-    std::cout << "hex input: " << *hex_str << std::endl;
+    std::cout << "hex input: " << hex_str << std::endl;
 
     std::cout << "top result: " << std::endl;
 
     auto key_str = wecrypt::binary_to_hex((*xor_scores)[0].byte);
-    auto xor_bytes = wecrypt::xor_single_byte(hex_bytes, (*xor_scores)[0].byte);
+    auto xor_bytes = wecrypt::xor_single_byte(*hex_bytes, (*xor_scores)[0].byte);
     std::string xor_str(xor_bytes->begin(), xor_bytes->end());
 
     std::cout << "key: 0x" << *key_str << " score: " << (*xor_scores)[0].score << std::endl;

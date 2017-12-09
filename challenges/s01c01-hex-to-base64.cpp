@@ -12,7 +12,7 @@ int s01::c01::hex_to_base64(int argc, char **argv) {
         return 1;
     }
 
-    auto hex_str = std::make_shared<std::string>(argv[2]);
+    std::string hex_str(argv[2]);
     auto base64_str = wecrypt::hex_to_base64(hex_str);
 
     if (!base64_str) {
@@ -20,7 +20,7 @@ int s01::c01::hex_to_base64(int argc, char **argv) {
         return 2;
     }
 
-    std::cout << "hex: " << *hex_str << std::endl;
+    std::cout << "hex: " << hex_str << std::endl;
     std::cout << "base64: " << *base64_str << std::endl;
 
     return 0;

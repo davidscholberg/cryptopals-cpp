@@ -68,34 +68,35 @@ namespace wecrypt {
         {' ', 17.647},
     };
 
-    std::shared_ptr<std::string> hex_to_base64(const std::shared_ptr<std::string> hex_str) {
-        return binary_to_base64(hex_to_binary(hex_str));
+    std::shared_ptr<std::string> hex_to_base64(const std::string &hex_str) {
+        auto buffer = hex_to_binary(hex_str);
+        if (!buffer) {
+            return nullptr;
+        }
+        return binary_to_base64(*buffer);
     }
 
     /**
      * Expects hex_str length to be even and contain valid hex digits.
-     * Returns nullptr if not or if hex_str is a nullptr.
+     * Returns nullptr if not.
      */
-    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::shared_ptr<std::string> hex_str) {
-        if (!hex_str) {
-            return nullptr;
-        }
-        if (hex_str->length() % 2 != 0) {
+    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::string &hex_str) {
+        if (hex_str.length() % 2 != 0) {
             return nullptr;
         }
 
-        auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str->length() / 2);
+        auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str.length() / 2);
 
         for (unsigned int i = 0; i < buffer->size(); i++) {
             int hex_str_index = i * 2;
-            auto binary_val = hex_val_map.find((*hex_str)[hex_str_index]);
+            auto binary_val = hex_val_map.find(hex_str[hex_str_index]);
             if (binary_val == hex_val_map.end()) {
                 return nullptr;
             }
             (*buffer)[i] = binary_val->second << 4;
 
             hex_str_index++;
-            binary_val = hex_val_map.find((*hex_str)[hex_str_index]);
+            binary_val = hex_val_map.find(hex_str[hex_str_index]);
             if (binary_val == hex_val_map.end()) {
                 return nullptr;
             }
@@ -105,52 +106,45 @@ namespace wecrypt {
         return buffer;
     }
 
-    /**
-     * Returns nullptr if buffer is a nullptr.
-     */
-    std::shared_ptr<std::string> binary_to_base64(const std::shared_ptr<std::vector<unsigned char>> buffer) {
-        if (!buffer) {
-            return nullptr;
-        }
-
+    std::shared_ptr<std::string> binary_to_base64(const std::vector<unsigned char> &buffer) {
         static const char padding_char = '=';
 
         // base64 string size is buffer size * 3/4 rounded up to next multiple of 4
-        const unsigned int base64_str_len = (((buffer->size() * 4 / 3) + 4 - 1) / 4) * 4;
+        const unsigned int base64_str_len = (((buffer.size() * 4 / 3) + 4 - 1) / 4) * 4;
         auto base64_str = std::make_shared<std::string>(base64_str_len, padding_char);
 
         int base64_str_index = 0;
 
-        for (unsigned int i = 0; i < buffer->size(); i += 3) {
+        for (unsigned int i = 0; i < buffer.size(); i += 3) {
             // first 6-bit group
-            char binary_val = (*buffer)[i] >> 2;
+            char binary_val = buffer[i] >> 2;
             (*base64_str)[base64_str_index] = base64_char_list[binary_val];
 
             // second 6-bit group
             base64_str_index++;
-            binary_val = ((*buffer)[i] << 4) & 0b00110000;
-            if (i + 1 < buffer->size()) {
-                binary_val |= (*buffer)[i + 1] >> 4;
+            binary_val = (buffer[i] << 4) & 0b00110000;
+            if (i + 1 < buffer.size()) {
+                binary_val |= buffer[i + 1] >> 4;
             }
             (*base64_str)[base64_str_index] = base64_char_list[binary_val];
-            if (i + 1 >= buffer->size()) {
+            if (i + 1 >= buffer.size()) {
                 break;
             }
 
             // third 6-bit group
             base64_str_index++;
-            binary_val = ((*buffer)[i + 1] << 2) & 0b00111100;
-            if (i + 2 < buffer->size()) {
-                binary_val |= (*buffer)[i + 2] >> 6;
+            binary_val = (buffer[i + 1] << 2) & 0b00111100;
+            if (i + 2 < buffer.size()) {
+                binary_val |= buffer[i + 2] >> 6;
             }
             (*base64_str)[base64_str_index] = base64_char_list[binary_val];
-            if (i + 2 >= buffer->size()) {
+            if (i + 2 >= buffer.size()) {
                 break;
             }
 
             // fourth 6-bit group
             base64_str_index++;
-            binary_val = (*buffer)[i + 2] & 0b00111111;
+            binary_val = buffer[i + 2] & 0b00111111;
             (*base64_str)[base64_str_index] = base64_char_list[binary_val];
 
             base64_str_index++;
@@ -159,23 +153,16 @@ namespace wecrypt {
         return base64_str;
     }
 
-    /**
-     * Returns nullptr if buffer is a nullptr.
-     */
-    std::shared_ptr<std::string> binary_to_hex(const std::shared_ptr<std::vector<unsigned char>> buffer) {
-        if (!buffer) {
-            return nullptr;
-        }
+    std::shared_ptr<std::string> binary_to_hex(const std::vector<unsigned char> &buffer) {
+        auto hex_str = std::make_shared<std::string>(buffer.size() * 2, '0');
 
-        auto hex_str = std::make_shared<std::string>(buffer->size() * 2, '0');
-
-        for (unsigned int i = 0; i < buffer->size(); i++) {
+        for (unsigned int i = 0; i < buffer.size(); i++) {
             // first 4-bit group
-            char binary_val = (*buffer)[i] >> 4;
+            char binary_val = buffer[i] >> 4;
             (*hex_str)[i * 2] = hex_char_list[binary_val];
 
             // second 4-bit group
-            binary_val = (*buffer)[i] & 0b00001111;
+            binary_val = buffer[i] & 0b00001111;
             (*hex_str)[i * 2 + 1] = hex_char_list[binary_val];
         }
 
@@ -197,58 +184,41 @@ namespace wecrypt {
     }
 
     /**
-     * Returns nullptr if either buffer is a nullptr or if they don't have equal sizes.
+     * Returns nullptr if buffers don't have equal sizes.
      */
     std::shared_ptr<std::vector<unsigned char>> xor_bytes(
-            const std::shared_ptr<std::vector<unsigned char>> buffer_a,
-            const std::shared_ptr<std::vector<unsigned char>> buffer_b) {
-        if (!buffer_a || !buffer_b) {
-            return nullptr;
-        }
-        if (buffer_a->size() != buffer_b->size()) {
+            const std::vector<unsigned char> &buffer_a,
+            const std::vector<unsigned char> &buffer_b) {
+        if (buffer_a.size() != buffer_b.size()) {
             return nullptr;
         }
 
-        auto xor_buffer = std::make_shared<std::vector<unsigned char>>(buffer_a->size());
+        auto xor_buffer = std::make_shared<std::vector<unsigned char>>(buffer_a.size());
 
         for (unsigned int i = 0; i < xor_buffer->size(); i++) {
-            (*xor_buffer)[i] = (*buffer_a)[i] ^ (*buffer_b)[i];
+            (*xor_buffer)[i] = buffer_a[i] ^ buffer_b[i];
         }
 
         return xor_buffer;
     }
 
-    /**
-     * Returns nullptr if buffer is a nullptr.
-     */
     std::shared_ptr<std::vector<unsigned char>> xor_single_byte(
-            const std::shared_ptr<std::vector<unsigned char>> buffer,
+            const std::vector<unsigned char> &buffer,
             unsigned char byte) {
-        if (!buffer) {
-            return nullptr;
-        }
-
-        auto xor_buffer = std::make_shared<std::vector<unsigned char>>(buffer->size());
+        auto xor_buffer = std::make_shared<std::vector<unsigned char>>(buffer.size());
 
         for (unsigned int i = 0; i < xor_buffer->size(); i++) {
-            (*xor_buffer)[i] = (*buffer)[i] ^ byte;
+            (*xor_buffer)[i] = buffer[i] ^ byte;
         }
 
         return xor_buffer;
     }
 
-    /**
-     * Returns -1 if buffer is a nullptr.
-     */
-    float score_english(const std::shared_ptr<std::vector<unsigned char>> buffer) {
-        if (!buffer) {
-            return -1;
-        }
-
+    float score_english(const std::vector<unsigned char> &buffer) {
         float total_score = 0;
 
-        for (unsigned int i = 0; i < buffer->size(); i++) {
-            auto char_score = letter_freq.find((*buffer)[i]);
+        for (unsigned int i = 0; i < buffer.size(); i++) {
+            auto char_score = letter_freq.find(buffer[i]);
 
             if (char_score == letter_freq.end()) {
                 continue;
@@ -260,21 +230,14 @@ namespace wecrypt {
         return total_score;
     }
 
-    /**
-     * Returns nullptr if buffer is a nullptr.
-     */
     std::shared_ptr<std::vector<xor_byte_score>> break_xor_single_byte(
-            const std::shared_ptr<std::vector<unsigned char>> buffer) {
-        if (!buffer) {
-            return nullptr;
-        }
-
+            const std::vector<unsigned char> &buffer) {
         auto scores = std::make_shared<std::vector<xor_byte_score>>(256);
 
         for (unsigned char i = 0; i < 255; i++) {
             auto xor_buffer = xor_single_byte(buffer, i);
             (*scores)[i].byte = i;
-            (*scores)[i].score = score_english(xor_buffer);
+            (*scores)[i].score = score_english(*xor_buffer);
         }
 
         std::sort(scores->begin(), scores->end(), xor_byte_score::rcompare);
@@ -282,29 +245,22 @@ namespace wecrypt {
         return scores;
     }
 
+    /**
+     * Expects hex_str length to be even and contain valid hex digits.
+     * Returns nullptr if not.
+     */
     std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
-            const std::shared_ptr<std::vector<std::string>> hex_strs) {
-        if (!hex_strs) {
-            return nullptr;
-        }
-
+            const std::vector<std::string> &hex_strs) {
         auto scores = std::make_shared<std::vector<xor_byte_scores>>();
 
-        for (unsigned int i = 0; i < hex_strs->size(); i++) {
-            auto hex_str = std::make_shared<std::string>((*hex_strs)[i]);
-
-            auto hex_bytes = wecrypt::hex_to_binary(hex_str);
+        for (unsigned int i = 0; i < hex_strs.size(); i++) {
+            auto hex_bytes = wecrypt::hex_to_binary(hex_strs[i]);
 
             if (!hex_bytes) {
                 return nullptr;
             }
 
-            auto xor_scores = wecrypt::break_xor_single_byte(hex_bytes);
-
-            if (!xor_scores) {
-                return nullptr;
-            }
-
+            auto xor_scores = wecrypt::break_xor_single_byte(*hex_bytes);
             scores->push_back({i, xor_scores});
         }
 
@@ -313,22 +269,22 @@ namespace wecrypt {
         return scores;
     }
 
-    bool xor_byte_score::compare(xor_byte_score i, xor_byte_score j) {
+    bool xor_byte_score::compare(const xor_byte_score &i, const xor_byte_score &j) {
         return i.score < j.score;
     }
 
-    bool xor_byte_score::rcompare(xor_byte_score i, xor_byte_score j) {
+    bool xor_byte_score::rcompare(const xor_byte_score &i, const xor_byte_score &j) {
         return j.score < i.score;
     }
 
-    bool xor_byte_scores::compare(xor_byte_scores i, xor_byte_scores j) {
+    bool xor_byte_scores::compare(const xor_byte_scores &i, const xor_byte_scores &j) {
         if (!i.scores->empty() && !j.scores->empty()) {
             return xor_byte_score::compare((*i.scores)[0], (*j.scores)[0]);
         }
         return i.scores->empty();
     }
 
-    bool xor_byte_scores::rcompare(xor_byte_scores i, xor_byte_scores j) {
+    bool xor_byte_scores::rcompare(const xor_byte_scores &i, const xor_byte_scores &j) {
         if (!i.scores->empty() && !j.scores->empty()) {
             return xor_byte_score::rcompare((*i.scores)[0], (*j.scores)[0]);
         }

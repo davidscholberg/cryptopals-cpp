@@ -18,8 +18,8 @@ int s01::c02::fixed_xor(int argc, char **argv) {
         return 1;
     }
 
-    auto hex_str_a = std::make_shared<std::string>(argv[2]);
-    auto hex_str_b = std::make_shared<std::string>(argv[3]);
+    std::string hex_str_a(argv[2]);
+    std::string hex_str_b(argv[3]);
 
     auto hex_bytes_a = wecrypt::hex_to_binary(hex_str_a);
     auto hex_bytes_b = wecrypt::hex_to_binary(hex_str_b);
@@ -29,22 +29,17 @@ int s01::c02::fixed_xor(int argc, char **argv) {
         return 2;
     }
 
-    auto xor_bytes = wecrypt::xor_bytes(hex_bytes_a, hex_bytes_b);
+    auto xor_bytes = wecrypt::xor_bytes(*hex_bytes_a, *hex_bytes_b);
 
     if (!xor_bytes) {
         std::cerr << "error: couldn't xor args" << std::endl;
         return 2;
     }
 
-    auto xor_str = wecrypt::binary_to_hex(xor_bytes);
+    auto xor_str = wecrypt::binary_to_hex(*xor_bytes);
 
-    if (!xor_str) {
-        std::cerr << "error: couldn't convert xor to hex" << std::endl;
-        return 2;
-    }
-
-    std::cout << "hex string a:   " << *hex_str_a << std::endl;
-    std::cout << "hex string b:   " << *hex_str_b << std::endl;
+    std::cout << "hex string a:   " << hex_str_a << std::endl;
+    std::cout << "hex string b:   " << hex_str_b << std::endl;
     std::cout << "xor of a and b: " << *xor_str << std::endl;
 
     return 0;
