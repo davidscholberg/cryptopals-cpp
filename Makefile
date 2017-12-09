@@ -35,5 +35,17 @@ clean:
 	find . -name '*.o' -exec rm '{}' \;
 	rm cryptopals
 
+s01c01: all
+	./cryptopals $@ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
+
+s01c02: all
+	./cryptopals $@ 1c0111001f010100061a024b53535009181c 686974207468652062756c6c277320657965
+
+s01c03: all
+	./cryptopals $@ 1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736
+
+s01c04: all
+	./cryptopals $@ resources/s01c04-hex-strings.txt
+
 retab:
 	find . -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;
