@@ -36,7 +36,7 @@ namespace wecrypt {
         static bool rcompare(const xor_byte_scores &i, const xor_byte_scores &j);
     };
     std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
-            const std::vector<std::string> &hex_strs);
+            const std::vector<std::vector<unsigned char>> &buffers);
 }
 
 #endif // WECRYPT_HPP_

@@ -245,22 +245,12 @@ namespace wecrypt {
         return scores;
     }
 
-    /**
-     * Expects hex_str length to be even and contain valid hex digits.
-     * Returns nullptr if not.
-     */
     std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
-            const std::vector<std::string> &hex_strs) {
+            const std::vector<std::vector<unsigned char>> &buffers) {
         auto scores = std::make_shared<std::vector<xor_byte_scores>>();
 
-        for (unsigned int i = 0; i < hex_strs.size(); i++) {
-            auto hex_bytes = wecrypt::hex_to_binary(hex_strs[i]);
-
-            if (!hex_bytes) {
-                return nullptr;
-            }
-
-            auto xor_scores = wecrypt::break_xor_single_byte(*hex_bytes);
+        for (unsigned int i = 0; i < buffers.size(); i++) {
+            auto xor_scores = wecrypt::break_xor_single_byte(buffers[i]);
             scores->push_back({i, xor_scores});
         }
 
