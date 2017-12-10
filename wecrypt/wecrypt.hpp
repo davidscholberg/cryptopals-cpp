@@ -18,6 +18,9 @@ namespace wecrypt {
     std::shared_ptr<std::vector<unsigned char>> xor_single_byte(
             const std::vector<unsigned char> &buffer,
             unsigned char byte);
+    std::shared_ptr<std::vector<unsigned char>> xor_repeating_key(
+            const std::vector<unsigned char> &buffer,
+            const std::vector<unsigned char> &key);
 
     struct xor_byte_score {
         float score;

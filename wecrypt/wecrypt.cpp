@@ -214,6 +214,25 @@ namespace wecrypt {
         return xor_buffer;
     }
 
+    /**
+     * Returns nullptr if key is larger than buffer.
+     */
+    std::shared_ptr<std::vector<unsigned char>> xor_repeating_key(
+            const std::vector<unsigned char> &buffer,
+            const std::vector<unsigned char> &key) {
+        if (key.size() > buffer.size()) {
+            return nullptr;
+        }
+
+        std::vector<unsigned char> key_buffer(buffer.size());
+
+        for (unsigned int i = 0; i < key_buffer.size(); i++) {
+            key_buffer[i] = key[i % key.size()];
+        }
+
+        return xor_bytes(buffer, key_buffer);
+    }
+
     float score_english(const std::vector<unsigned char> &buffer) {
         float total_score = 0;
 
