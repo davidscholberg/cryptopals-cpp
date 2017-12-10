@@ -1,5 +1,5 @@
-#ifndef S01C02_SINGLE_BYTE_XOR_HPP_
-#define S01C02_SINGLE_BYTE_XOR_HPP_
+#ifndef S01C03_SINGLE_BYTE_XOR_HPP_
+#define S01C03_SINGLE_BYTE_XOR_HPP_
 
 #include <string>
 
@@ -10,4 +10,4 @@ namespace s01 {
     }
 }
 
-#endif // S01C02_SINGLE_BYTE_XOR_HPP_
+#endif // S01C03_SINGLE_BYTE_XOR_HPP_
