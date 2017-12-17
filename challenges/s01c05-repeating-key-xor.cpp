@@ -40,7 +40,7 @@ int s01::c05::repeating_key_xor(int argc, char **argv) {
 
     auto xor_hex = wecrypt::binary_to_hex(*xor_bytes);
 
-    std::cout << "clear text: " << *clear_text << std::endl;
+    std::cout << "clear text: " << std::endl << *clear_text << std::endl;
     std::cout << "key: " << *key_str << std::endl;
     std::cout << "xor: " << *xor_hex << std::endl;
 
