@@ -26,6 +26,25 @@ namespace wecrypt {
         {'4'}, {'5'}, {'6'}, {'7'},
         {'8'}, {'9'}, {'+'}, {'/'},
     };
+    const char base64_pad_char = '=';
+    const std::unordered_map<char, unsigned char> base64_val_map = {
+        {'A', 0},  {'B', 1},  {'C', 2},  {'D', 3},
+        {'E', 4},  {'F', 5},  {'G', 6},  {'H', 7},
+        {'I', 8},  {'J', 9},  {'K', 10}, {'L', 11},
+        {'M', 12}, {'N', 13}, {'O', 14}, {'P', 15},
+        {'Q', 16}, {'R', 17}, {'S', 18}, {'T', 19},
+        {'U', 20}, {'V', 21}, {'W', 22}, {'X', 23},
+        {'Y', 24}, {'Z', 25}, {'a', 26}, {'b', 27},
+        {'c', 28}, {'d', 29}, {'e', 30}, {'f', 31},
+        {'g', 32}, {'h', 33}, {'i', 34}, {'j', 35},
+        {'k', 36}, {'l', 37}, {'m', 38}, {'n', 39},
+        {'o', 40}, {'p', 41}, {'q', 42}, {'r', 43},
+        {'s', 44}, {'t', 45}, {'u', 46}, {'v', 47},
+        {'w', 48}, {'x', 49}, {'y', 50}, {'z', 51},
+        {'0', 52}, {'1', 53}, {'2', 54}, {'3', 55},
+        {'4', 56}, {'5', 57}, {'6', 58}, {'7', 59},
+        {'8', 60}, {'9', 61}, {'+', 62}, {'/', 63},
+    };
     const std::vector<char> hex_char_list = {
         {'0'}, {'1'}, {'2'}, {'3'},
         {'4'}, {'5'}, {'6'}, {'7'},
@@ -76,42 +95,82 @@ namespace wecrypt {
         return binary_to_base64(*buffer);
     }
 
+    std::shared_ptr<std::string> base64_to_hex(const std::string &base64_str) {
+        auto buffer = base64_to_binary(base64_str);
+        if (!buffer) {
+            return nullptr;
+        }
+        return binary_to_hex(*buffer);
+    }
+
     /**
-     * Expects hex_str length to be even and contain valid hex digits.
-     * Returns nullptr if not.
+     * Returns nullptr if base64_str is invalid base64.
      */
-    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::string &hex_str) {
-        if (hex_str.length() % 2 != 0) {
+    std::shared_ptr<std::vector<unsigned char>> base64_to_binary(const std::string &base64_str) {
+        if (base64_str.length() % 4 != 0) {
             return nullptr;
         }
 
-        auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str.length() / 2);
+        if (base64_str.length() == 0) {
+            return std::make_shared<std::vector<unsigned char>>();
+        }
 
-        for (unsigned int i = 0; i < buffer->size(); i++) {
-            int hex_str_index = i * 2;
-            auto binary_val = hex_val_map.find(hex_str[hex_str_index]);
-            if (binary_val == hex_val_map.end()) {
+        unsigned int padding_chars = 0;
+
+        for (unsigned int i = base64_str.length() - 1; i > base64_str.length() - 3; i--) {
+            if (base64_str[i] != base64_pad_char) {
+                break;
+            }
+            padding_chars++;
+        }
+
+        // the buffer size is the string size * 3/4 minus the number of padding chars
+        auto buffer = std::make_shared<std::vector<unsigned char>>(
+                (base64_str.length() * 3 / 4) - padding_chars);
+
+        for (unsigned int i = 0; i < base64_str.length(); i++) {
+            if (base64_str[i] == base64_pad_char) {
+                if (i < base64_str.length() - 2) {
+                    return nullptr;
+                }
+                if (i == base64_str.length() - 2 && base64_str[i + 1] != base64_pad_char) {
+                    return nullptr;
+                }
+                break;
+            }
+
+            auto binary_val = base64_val_map.find(base64_str[i]);
+            if (binary_val == base64_val_map.end()) {
                 return nullptr;
             }
-            (*buffer)[i] = binary_val->second << 4;
 
-            hex_str_index++;
-            binary_val = hex_val_map.find(hex_str[hex_str_index]);
-            if (binary_val == hex_val_map.end()) {
-                return nullptr;
+            unsigned int buffer_index = i * 3 / 4;
+
+            switch (i % 4) {
+                case 0:
+                    (*buffer)[buffer_index] = binary_val->second << 2;
+                    break;
+                case 1:
+                    (*buffer)[buffer_index] |= binary_val->second >> 4;
+                    (*buffer)[buffer_index + 1] = binary_val->second << 4;
+                    break;
+                case 2:
+                    (*buffer)[buffer_index] |= binary_val->second >> 2;
+                    (*buffer)[buffer_index + 1] = binary_val->second << 6;
+                    break;
+                case 3:
+                    (*buffer)[buffer_index] |= binary_val->second;
+                    break;
             }
-            (*buffer)[i] |= binary_val->second;
         }
 
         return buffer;
     }
 
     std::shared_ptr<std::string> binary_to_base64(const std::vector<unsigned char> &buffer) {
-        static const char padding_char = '=';
-
-        // base64 string size is buffer size * 3/4 rounded up to next multiple of 4
+        // base64 string size is buffer size * 4/3 rounded up to next multiple of 4
         const unsigned int base64_str_len = (((buffer.size() * 4 / 3) + 4 - 1) / 4) * 4;
-        auto base64_str = std::make_shared<std::string>(base64_str_len, padding_char);
+        auto base64_str = std::make_shared<std::string>(base64_str_len, base64_pad_char);
 
         int base64_str_index = 0;
 
@@ -151,6 +210,36 @@ namespace wecrypt {
         }
 
         return base64_str;
+    }
+
+    /**
+     * Expects hex_str length to be even and contain valid hex digits.
+     * Returns nullptr if not.
+     */
+    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::string &hex_str) {
+        if (hex_str.length() % 2 != 0) {
+            return nullptr;
+        }
+
+        auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str.length() / 2);
+
+        for (unsigned int i = 0; i < buffer->size(); i++) {
+            int hex_str_index = i * 2;
+            auto binary_val = hex_val_map.find(hex_str[hex_str_index]);
+            if (binary_val == hex_val_map.end()) {
+                return nullptr;
+            }
+            (*buffer)[i] = binary_val->second << 4;
+
+            hex_str_index++;
+            binary_val = hex_val_map.find(hex_str[hex_str_index]);
+            if (binary_val == hex_val_map.end()) {
+                return nullptr;
+            }
+            (*buffer)[i] |= binary_val->second;
+        }
+
+        return buffer;
     }
 
     std::shared_ptr<std::string> binary_to_hex(const std::vector<unsigned char> &buffer) {
@@ -298,5 +387,69 @@ namespace wecrypt {
             return xor_byte_score::rcompare((*i.scores)[0], (*j.scores)[0]);
         }
         return j.scores->empty();
+    }
+
+    /**
+     * Returns -1 if buffers don't have equal sizes.
+     */
+    int hamming_distance(
+            const std::vector<unsigned char> &buffer_a,
+            const std::vector<unsigned char> &buffer_b) {
+        if (buffer_a.size() != buffer_b.size()) {
+            return -1;
+        }
+
+        int distance = 0;
+
+        for (unsigned int i = 0; i < buffer_a.size(); i++) {
+            unsigned char xor_val = buffer_a[i] ^ buffer_b[i];
+
+            // Kernigan's algorithm for counting bits set
+            while (xor_val) {
+                distance++;
+                xor_val &= xor_val - 1;
+            }
+        }
+
+        return distance;
+    }
+
+    std::shared_ptr<std::vector<unsigned char>> break_xor_repeating_key(
+            const std::vector<unsigned char> &buffer) {
+        unsigned int key_size_guess = 0;
+        // This is the average hamming distance of keysized chunks of the buffer
+        // normalized by the keysize.
+        // The initial value is the largest hamming distance possible for the
+        // key sizes we're checking.
+        float smallest_norm_distance = std::max((int)(buffer.size() / 2), 40) * 8;
+        for (unsigned int i = 2; i <= buffer.size() / 2 && i < 40; i++) {
+            int current_distance = 0;
+            for (unsigned int j = 0; j < (buffer.size() / i) - 1; j++) {
+                std::vector<unsigned char> buffer_a(
+                        buffer.begin() + (j * i),
+                        buffer.begin() + ((j + 1) * i));
+                std::vector<unsigned char> buffer_b(
+                        buffer.begin() + ((j + 1) * i),
+                        buffer.begin() + ((j + 2) * i));
+                current_distance += hamming_distance(buffer_a, buffer_b);
+            }
+            float norm_distance = (float)current_distance / ((buffer.size() / (float)i) - 1) / (float)i;
+            if (norm_distance < smallest_norm_distance) {
+                smallest_norm_distance = norm_distance;
+                key_size_guess = i;
+            }
+        }
+
+        auto key_buffer = std::make_shared<std::vector<unsigned char>>(key_size_guess);
+        for (unsigned int i = 0; i < key_size_guess; i++) {
+            std::vector<unsigned char> transposed_buffer(((buffer.size() - i - 1) / key_size_guess) + 1);
+            for (unsigned int j = 0; j < transposed_buffer.size(); j++) {
+                transposed_buffer[j] = buffer[(j * key_size_guess) + i];
+            }
+            auto scores = break_xor_single_byte(transposed_buffer);
+            (*key_buffer)[i] = (*scores)[0].byte;
+        }
+
+        return key_buffer;
     }
 }

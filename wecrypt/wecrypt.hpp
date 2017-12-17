@@ -7,8 +7,10 @@
 
 namespace wecrypt {
     std::shared_ptr<std::string> hex_to_base64(const std::string &hex_str);
-    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::string &hex_str);
+    std::shared_ptr<std::string> base64_to_hex(const std::string &hex_str);
+    std::shared_ptr<std::vector<unsigned char>> base64_to_binary(const std::string &base64_str);
     std::shared_ptr<std::string> binary_to_base64(const std::vector<unsigned char> &buffer);
+    std::shared_ptr<std::vector<unsigned char>> hex_to_binary(const std::string &hex_str);
     std::shared_ptr<std::string> binary_to_hex(const std::vector<unsigned char> &buffer);
     std::shared_ptr<std::string> binary_to_hex(const unsigned char byte);
 
@@ -40,6 +42,13 @@ namespace wecrypt {
     };
     std::shared_ptr<std::vector<xor_byte_scores>> detect_xor_single_byte(
             const std::vector<std::vector<unsigned char>> &buffers);
+
+    int hamming_distance(
+            const std::vector<unsigned char> &buffer_a,
+            const std::vector<unsigned char> &buffer_b);
+
+    std::shared_ptr<std::vector<unsigned char>> break_xor_repeating_key(
+            const std::vector<unsigned char> &buffer);
 }
 
 #endif // WECRYPT_HPP_

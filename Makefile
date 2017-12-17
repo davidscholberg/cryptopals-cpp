@@ -8,13 +8,15 @@ OBJECTS=\
 		challenges/s01c02-fixed-xor.o \
 		challenges/s01c03-single-byte-xor.o \
 		challenges/s01c04-detect-single-byte-xor.o \
-		challenges/s01c05-repeating-key-xor.o
+		challenges/s01c05-repeating-key-xor.o \
+		challenges/s01c06-break-repeating-key-xor.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
 		challenges/s01c03-single-byte-xor.hpp \
 		challenges/s01c04-detect-single-byte-xor.hpp \
-		challenges/s01c05-repeating-key-xor.hpp
+		challenges/s01c05-repeating-key-xor.hpp \
+		challenges/s01c06-break-repeating-key-xor.hpp
 
 all: cryptopals
 
@@ -51,6 +53,9 @@ s01c04: all
 
 s01c05: all
 	./cryptopals $@ resources/s01c05-clear-text.txt resources/s01c05-key.txt
+
+s01c06: all
+	./cryptopals $@ resources/s01c06-cipher-text.txt
 
 retab:
 	find . -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;
