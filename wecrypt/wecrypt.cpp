@@ -27,35 +27,11 @@ namespace wecrypt {
         {'8'}, {'9'}, {'+'}, {'/'},
     };
     const char base64_pad_char = '=';
-    const std::unordered_map<char, unsigned char> base64_val_map = {
-        {'A', 0},  {'B', 1},  {'C', 2},  {'D', 3},
-        {'E', 4},  {'F', 5},  {'G', 6},  {'H', 7},
-        {'I', 8},  {'J', 9},  {'K', 10}, {'L', 11},
-        {'M', 12}, {'N', 13}, {'O', 14}, {'P', 15},
-        {'Q', 16}, {'R', 17}, {'S', 18}, {'T', 19},
-        {'U', 20}, {'V', 21}, {'W', 22}, {'X', 23},
-        {'Y', 24}, {'Z', 25}, {'a', 26}, {'b', 27},
-        {'c', 28}, {'d', 29}, {'e', 30}, {'f', 31},
-        {'g', 32}, {'h', 33}, {'i', 34}, {'j', 35},
-        {'k', 36}, {'l', 37}, {'m', 38}, {'n', 39},
-        {'o', 40}, {'p', 41}, {'q', 42}, {'r', 43},
-        {'s', 44}, {'t', 45}, {'u', 46}, {'v', 47},
-        {'w', 48}, {'x', 49}, {'y', 50}, {'z', 51},
-        {'0', 52}, {'1', 53}, {'2', 54}, {'3', 55},
-        {'4', 56}, {'5', 57}, {'6', 58}, {'7', 59},
-        {'8', 60}, {'9', 61}, {'+', 62}, {'/', 63},
-    };
     const std::vector<char> hex_char_list = {
         {'0'}, {'1'}, {'2'}, {'3'},
         {'4'}, {'5'}, {'6'}, {'7'},
         {'8'}, {'9'}, {'a'}, {'b'},
         {'c'}, {'d'}, {'e'}, {'f'},
-    };
-    const std::unordered_map<char, unsigned char> hex_val_map = {
-        {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},
-        {'4', 4},  {'5', 5},  {'6', 6},  {'7', 7},
-        {'8', 8},  {'9', 9},  {'a', 10}, {'b', 11},
-        {'c', 12}, {'d', 13}, {'e', 14}, {'f', 15},
     };
     const std::unordered_map<char, float> letter_freq = {
         {'a', 8.167},
@@ -139,8 +115,19 @@ namespace wecrypt {
                 break;
             }
 
-            auto binary_val = base64_val_map.find(base64_str[i]);
-            if (binary_val == base64_val_map.end()) {
+            unsigned char binary_val = 0;
+            char base64_char = base64_str[i];
+            if (base64_char >= 'A' && base64_char <= 'Z') {
+                binary_val = base64_char - 65;
+            } else if (base64_char >= 'a' && base64_char <= 'z') {
+                binary_val = base64_char - 71;
+            } else if (base64_char >= '0' && base64_char <= '9') {
+                binary_val = base64_char + 4;
+            } else if (base64_char == '+') {
+                binary_val = 62;
+            } else if (base64_char == '/') {
+                binary_val = 63;
+            } else {
                 return nullptr;
             }
 
@@ -148,18 +135,18 @@ namespace wecrypt {
 
             switch (i % 4) {
                 case 0:
-                    (*buffer)[buffer_index] = binary_val->second << 2;
+                    (*buffer)[buffer_index] = binary_val << 2;
                     break;
                 case 1:
-                    (*buffer)[buffer_index] |= binary_val->second >> 4;
-                    (*buffer)[buffer_index + 1] = binary_val->second << 4;
+                    (*buffer)[buffer_index] |= binary_val >> 4;
+                    (*buffer)[buffer_index + 1] = binary_val << 4;
                     break;
                 case 2:
-                    (*buffer)[buffer_index] |= binary_val->second >> 2;
-                    (*buffer)[buffer_index + 1] = binary_val->second << 6;
+                    (*buffer)[buffer_index] |= binary_val >> 2;
+                    (*buffer)[buffer_index + 1] = binary_val << 6;
                     break;
                 case 3:
-                    (*buffer)[buffer_index] |= binary_val->second;
+                    (*buffer)[buffer_index] |= binary_val;
                     break;
             }
         }
@@ -223,20 +210,29 @@ namespace wecrypt {
 
         auto buffer = std::make_shared<std::vector<unsigned char>>(hex_str.length() / 2);
 
-        for (unsigned int i = 0; i < buffer->size(); i++) {
-            int hex_str_index = i * 2;
-            auto binary_val = hex_val_map.find(hex_str[hex_str_index]);
-            if (binary_val == hex_val_map.end()) {
+        for (unsigned int i = 0; i < hex_str.length(); i++) {
+            unsigned char binary_val = 0;
+            char hex_char = hex_str[i];
+            if (hex_char >= '0' && hex_char <= '9') {
+                binary_val = hex_char - 48;
+            } else if (hex_char >= 'a' && hex_char <= 'f') {
+                binary_val = hex_char - 87;
+            } else if (hex_char >= 'A' && hex_char <= 'F') {
+                binary_val = hex_char - 55;
+            } else {
                 return nullptr;
             }
-            (*buffer)[i] = binary_val->second << 4;
 
-            hex_str_index++;
-            binary_val = hex_val_map.find(hex_str[hex_str_index]);
-            if (binary_val == hex_val_map.end()) {
-                return nullptr;
+            unsigned int buffer_index = i / 2;
+
+            switch (i % 2) {
+                case 0:
+                    (*buffer)[buffer_index] = binary_val << 4;
+                    break;
+                case 1:
+                    (*buffer)[buffer_index] |= binary_val;
+                    break;
             }
-            (*buffer)[i] |= binary_val->second;
         }
 
         return buffer;
