@@ -116,7 +116,7 @@ namespace wecrypt {
             }
 
             unsigned char binary_val = 0;
-            char base64_char = base64_str[i];
+            const char base64_char = base64_str[i];
             if (base64_char >= 'A' && base64_char <= 'Z') {
                 binary_val = base64_char - 65;
             } else if (base64_char >= 'a' && base64_char <= 'z') {
@@ -131,7 +131,7 @@ namespace wecrypt {
                 return nullptr;
             }
 
-            unsigned int buffer_index = i * 3 / 4;
+            const unsigned int buffer_index = i * 3 / 4;
 
             switch (i % 4) {
                 case 0:
@@ -212,7 +212,7 @@ namespace wecrypt {
 
         for (unsigned int i = 0; i < hex_str.length(); i++) {
             unsigned char binary_val = 0;
-            char hex_char = hex_str[i];
+            const char hex_char = hex_str[i];
             if (hex_char >= '0' && hex_char <= '9') {
                 binary_val = hex_char - 48;
             } else if (hex_char >= 'a' && hex_char <= 'f') {
@@ -223,7 +223,7 @@ namespace wecrypt {
                 return nullptr;
             }
 
-            unsigned int buffer_index = i / 2;
+            const unsigned int buffer_index = i / 2;
 
             switch (i % 2) {
                 case 0:
