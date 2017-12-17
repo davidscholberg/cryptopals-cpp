@@ -43,10 +43,6 @@ wecrypt/wecrypt.hpp: wecrypt/info.hpp wecrypt/string-conversion.hpp wecrypt/xor.
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
 	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-clean:
-	find . -name '*.o' -exec rm '{}' \;
-	rm -f cryptopals
-
 s01c01: all
 	./cryptopals $@ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
 
@@ -64,6 +60,10 @@ s01c05: all
 
 s01c06: all
 	./cryptopals $@ resources/s01c06-cipher-text.txt
+
+clean:
+	find . -name '*.o' -exec rm '{}' \;
+	rm -f cryptopals
 
 retab:
 	find . -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;
