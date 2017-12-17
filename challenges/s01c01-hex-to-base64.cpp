@@ -20,8 +20,21 @@ int s01::c01::hex_to_base64(int argc, char **argv) {
         return 2;
     }
 
-    std::cout << "hex: " << hex_str << std::endl;
+    auto new_hex_str = wecrypt::base64_to_hex(*base64_str);
+
+    if (!new_hex_str) {
+        std::cerr << "error: couldn't convert base64 back to hex" << std::endl;
+        return 2;
+    }
+
+    std::cout << "orig hex: " << hex_str << std::endl;
     std::cout << "base64: " << *base64_str << std::endl;
+    std::cout << "new hex:  " << *new_hex_str << std::endl;
+
+    if (hex_str != *new_hex_str) {
+        std::cerr << "error: original and converted hex don't match" << std::endl;
+        return 3;
+    }
 
     return 0;
 }
