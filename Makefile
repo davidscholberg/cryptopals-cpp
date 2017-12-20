@@ -1,5 +1,5 @@
-CPP=g++
-CPPFLAGS=-Wall -std=c++14 -I .
+CC=g++
+CFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
 		wecrypt/info.o \
@@ -23,25 +23,25 @@ CHALLENGE_HEADERS=\
 all: cryptopals
 
 cryptopals: $(OBJECTS)
-	$(CPP) $(CPPFLAGS) $^ -o $@
+	$(CC) $^ -o $@
 
 cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 utils/utils.o: utils/utils.cpp utils/utils.hpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/wecrypt.hpp: wecrypt/info.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
-	$(CPP) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 s01c01: all
 	./cryptopals $@ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
