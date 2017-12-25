@@ -2,6 +2,7 @@ CC=g++
 CFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
+		wecrypt/aes.o \
 		wecrypt/info.o \
 		wecrypt/string-conversion.o \
 		wecrypt/xor.o \
@@ -37,7 +38,7 @@ wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/wecrypt.hpp: wecrypt/info.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
+wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/info.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
