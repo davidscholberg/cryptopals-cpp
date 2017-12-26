@@ -2,7 +2,9 @@
 #define WECRYPT_HPP_
 
 #include "wecrypt/aes.hpp"
+#include "wecrypt/cipher-mode.hpp"
 #include "wecrypt/info.hpp"
+#include "wecrypt/padding.hpp"
 #include "wecrypt/string-conversion.hpp"
 #include "wecrypt/xor.hpp"
 

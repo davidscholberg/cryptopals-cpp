@@ -3,7 +3,9 @@ CFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
 		wecrypt/aes.o \
+		wecrypt/cipher-mode.o \
 		wecrypt/info.o \
+		wecrypt/padding.o \
 		wecrypt/string-conversion.o \
 		wecrypt/xor.o \
 		utils/utils.o \
@@ -12,14 +14,16 @@ OBJECTS=\
 		challenges/s01c03-single-byte-xor.o \
 		challenges/s01c04-detect-single-byte-xor.o \
 		challenges/s01c05-repeating-key-xor.o \
-		challenges/s01c06-break-repeating-key-xor.o
+		challenges/s01c06-break-repeating-key-xor.o \
+		challenges/s01c07-aes-ecb.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
 		challenges/s01c03-single-byte-xor.hpp \
 		challenges/s01c04-detect-single-byte-xor.hpp \
 		challenges/s01c05-repeating-key-xor.hpp \
-		challenges/s01c06-break-repeating-key-xor.hpp
+		challenges/s01c06-break-repeating-key-xor.hpp \
+		challenges/s01c07-aes-ecb.hpp
 
 all: cryptopals
 
@@ -38,7 +42,7 @@ wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/info.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
+wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
@@ -61,6 +65,9 @@ s01c05: all
 
 s01c06: all
 	./cryptopals $@ resources/s01c06-cipher-text.txt
+
+s01c07: all
+	./cryptopals $@ resources/s01c07-cipher-text.txt resources/s01c07-key.txt
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;

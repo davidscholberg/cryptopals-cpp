@@ -8,6 +8,7 @@
 #include "challenges/s01c04-detect-single-byte-xor.hpp"
 #include "challenges/s01c05-repeating-key-xor.hpp"
 #include "challenges/s01c06-break-repeating-key-xor.hpp"
+#include "challenges/s01c07-aes-ecb.hpp"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -23,6 +24,7 @@ int main(int argc, char **argv) {
         {s01::c04::challenge_arg, s01::c04::detect_single_byte_xor},
         {s01::c05::challenge_arg, s01::c05::repeating_key_xor},
         {s01::c06::challenge_arg, s01::c06::break_repeating_key_xor},
+        {s01::c07::challenge_arg, s01::c07::aes_ecb},
     };
 
     auto challenge_func = function_map.find(argv[1]);
