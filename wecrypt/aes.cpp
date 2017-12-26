@@ -13,8 +13,8 @@
 // https://en.wikipedia.org/wiki/Rijndael_key_schedule
 
 namespace wecrypt {
-    const unsigned int nb = 4;
-    const unsigned int block_bytes = 16;
+    // size is in bytes
+    const unsigned int aes_block_size = 16;
     const unsigned int rounds_128 = 11;
 
     // taken from https://en.wikipedia.org/wiki/Rijndael_S-box
@@ -185,7 +185,7 @@ namespace wecrypt {
     // currently, only 128-bit keys are supported
     std::shared_ptr<std::vector<std::vector<unsigned char>>> get_key_schedule(
             const std::vector<unsigned char> &key) {
-        if (key.size() != block_bytes) {
+        if (key.size() != aes_block_size) {
             return nullptr;
         }
 
@@ -194,10 +194,10 @@ namespace wecrypt {
         (*key_schedule)[0] = key;
 
         for (unsigned int i = 1; i < rounds_128; i++) {
-            (*key_schedule)[i] = std::vector<unsigned char>(block_bytes);
+            (*key_schedule)[i] = std::vector<unsigned char>(aes_block_size);
             // copy and rotate word
             for (unsigned int j = 0; j < 4; j++) {
-                (*key_schedule)[i][(j + 3) % 4] = (*key_schedule)[i - 1][block_bytes - 4 + j];
+                (*key_schedule)[i][(j + 3) % 4] = (*key_schedule)[i - 1][aes_block_size - 4 + j];
             }
 
             // s-box
@@ -214,7 +214,7 @@ namespace wecrypt {
             }
 
             // fill the rest of the round key
-            for (unsigned int j = 4; j < block_bytes; j++) {
+            for (unsigned int j = 4; j < aes_block_size; j++) {
                 (*key_schedule)[i][j] = (*key_schedule)[i - 1][j] ^ (*key_schedule)[i][j - 4];
             }
         }
@@ -225,7 +225,7 @@ namespace wecrypt {
     bool add_round_key(
             std::vector<unsigned char> &state,
             const std::vector<unsigned char> &round_key) {
-        if (state.size() != block_bytes || round_key.size() != block_bytes) {
+        if (state.size() != aes_block_size || round_key.size() != aes_block_size) {
             return false;
         }
 
@@ -237,7 +237,7 @@ namespace wecrypt {
     }
 
     bool sub_bytes(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -249,7 +249,7 @@ namespace wecrypt {
     }
 
     bool shift_rows(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -281,7 +281,7 @@ namespace wecrypt {
     }
 
     bool mix_columns(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -320,7 +320,7 @@ namespace wecrypt {
     }
 
     bool inv_sub_bytes(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -332,7 +332,7 @@ namespace wecrypt {
     }
 
     bool inv_shift_rows(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -364,7 +364,7 @@ namespace wecrypt {
     }
 
     bool inv_mix_columns(std::vector<unsigned char> &state) {
-        if (state.size() != block_bytes) {
+        if (state.size() != aes_block_size) {
             return false;
         }
 
@@ -405,7 +405,7 @@ namespace wecrypt {
     std::shared_ptr<std::vector<unsigned char>> aes_encrypt(
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key) {
-        if (buffer.size() != block_bytes || key.size() != block_bytes) {
+        if (buffer.size() != aes_block_size || key.size() != aes_block_size) {
             return nullptr;
         }
 
@@ -451,7 +451,7 @@ namespace wecrypt {
     std::shared_ptr<std::vector<unsigned char>> aes_decrypt(
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key) {
-        if (buffer.size() != block_bytes || key.size() != block_bytes) {
+        if (buffer.size() != aes_block_size || key.size() != aes_block_size) {
             return nullptr;
         }
 

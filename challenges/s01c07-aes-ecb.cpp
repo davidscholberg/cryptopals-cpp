@@ -46,13 +46,27 @@ int s01::c07::aes_ecb(int argc, char **argv) {
     std::vector<unsigned char> key_buffer(key_str->begin(), key_str->end());
 
     auto plaintext_buffer = wecrypt::ecb_decrypt(
-            wecrypt::aes_decrypt,
-            wecrypt::pkcs7_unpad,
-            16,
+            wecrypt::aes_pkcs7_decrypt,
             *ciphertext_buffer,
             key_buffer);
     if (!plaintext_buffer) {
         std::cerr << "error: couldn't decrypt ciphertext" << std::endl;
+        return 2;
+    }
+
+    auto ciphertext_buffer_new = wecrypt::ecb_encrypt(
+            wecrypt::aes_pkcs7_encrypt,
+            *plaintext_buffer,
+            key_buffer);
+    if (!ciphertext_buffer_new) {
+        std::cerr << "error: couldn't encrypt plaintext" << std::endl;
+        return 2;
+    }
+
+    if (*ciphertext_buffer == *ciphertext_buffer_new) {
+        std::cout << "samesies :D" << std::endl;
+    } else {
+        std::cerr << "diffsies D:" << std::endl;
         return 2;
     }
 

@@ -36,6 +36,9 @@ cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
 utils/utils.o: utils/utils.cpp utils/utils.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
+wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 

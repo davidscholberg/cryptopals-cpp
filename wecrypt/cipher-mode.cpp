@@ -2,24 +2,37 @@
 #include <memory>
 #include <vector>
 
+#include "wecrypt/aes.hpp"
 #include "wecrypt/cipher-mode.hpp"
+#include "wecrypt/padding.hpp"
+
 
 namespace wecrypt {
+    const encryption_profile aes_pkcs7_encrypt = {
+        wecrypt::aes_encrypt,
+        wecrypt::pkcs7_pad,
+        aes_block_size
+    };
+
+    const decryption_profile aes_pkcs7_decrypt = {
+        wecrypt::aes_decrypt,
+        wecrypt::pkcs7_unpad,
+        aes_block_size
+    };
+
     std::shared_ptr<std::vector<unsigned char>> ecb_encrypt(
-            encrypt_function encrypt,
-            pad_function pad,
-            const unsigned int block_size,
+            const encryption_profile &profile,
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key) {
-        auto padded_buffer = pad(buffer, block_size);
+        auto padded_buffer = profile.pad(buffer, profile.block_size);
 
         auto ciphertext = std::make_shared<std::vector<unsigned char>>(padded_buffer->size());
 
-        for (unsigned int i = 0; i < padded_buffer->size(); i += block_size) {
-            auto ciphertext_block = encrypt(
+        for (unsigned int i = 0; i < padded_buffer->size(); i += profile.block_size) {
+            auto ciphertext_block = profile.encrypt(
                     std::vector<unsigned char>(
                         padded_buffer->begin() + i,
-                        padded_buffer->begin() + i + block_size),
+                        padded_buffer->begin() + i + profile.block_size),
                     key);
             if (!ciphertext_block) {
                 return nullptr;
@@ -34,22 +47,20 @@ namespace wecrypt {
     }
 
     std::shared_ptr<std::vector<unsigned char>> ecb_decrypt(
-            decrypt_function decrypt,
-            unpad_function unpad,
-            const unsigned int block_size,
+            const decryption_profile &profile,
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key) {
-        if (buffer.size() % block_size != 0) {
+        if (buffer.size() % profile.block_size != 0) {
             return nullptr;
         }
 
         auto plaintext = std::make_shared<std::vector<unsigned char>>(buffer.size());
 
-        for (unsigned int i = 0; i < buffer.size(); i += block_size) {
-            auto plaintext_block = decrypt(
+        for (unsigned int i = 0; i < buffer.size(); i += profile.block_size) {
+            auto plaintext_block = profile.decrypt(
                     std::vector<unsigned char>(
                         buffer.begin() + i,
-                        buffer.begin() + i + block_size),
+                        buffer.begin() + i + profile.block_size),
                     key);
             if (!plaintext_block) {
                 return nullptr;
@@ -60,7 +71,7 @@ namespace wecrypt {
             }
         }
 
-        bool ok = unpad(*plaintext, block_size);
+        bool ok = profile.unpad(*plaintext, profile.block_size);
         if (!ok) {
             return nullptr;
         }
