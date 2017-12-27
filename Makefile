@@ -15,7 +15,8 @@ OBJECTS=\
 		challenges/s01c04-detect-single-byte-xor.o \
 		challenges/s01c05-repeating-key-xor.o \
 		challenges/s01c06-break-repeating-key-xor.o \
-		challenges/s01c07-aes-ecb.o
+		challenges/s01c07-aes-ecb.o \
+		challenges/s01c08-detect-aes-ecb.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
@@ -23,7 +24,8 @@ CHALLENGE_HEADERS=\
 		challenges/s01c04-detect-single-byte-xor.hpp \
 		challenges/s01c05-repeating-key-xor.hpp \
 		challenges/s01c06-break-repeating-key-xor.hpp \
-		challenges/s01c07-aes-ecb.hpp
+		challenges/s01c07-aes-ecb.hpp \
+		challenges/s01c08-detect-aes-ecb.hpp
 
 all: cryptopals
 
@@ -71,6 +73,9 @@ s01c06: all
 
 s01c07: all
 	./cryptopals $@ resources/s01c07-cipher-text.txt resources/s01c07-key.txt
+
+s01c08: all
+	./cryptopals $@ resources/s01c08-hex-strings.txt
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;

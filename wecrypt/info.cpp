@@ -75,7 +75,7 @@ namespace wecrypt {
         return distance;
     }
 
-    // get average hamming distance between pairs of adjacent blocks
+    // get average hamming distance between all pairs of blocks in buffer
     // returns -1 if block_size is more than half of the buffer size
     float avg_hamming_distance(
             const std::vector<unsigned char> &buffer,
@@ -84,16 +84,50 @@ namespace wecrypt {
             return -1;
         }
 
+        unsigned int blocks = buffer.size() / block_size;
         int total_distance = 0;
-        for (unsigned int i = 0; i < (buffer.size() / block_size) - 1; i++) {
+        for (unsigned int i = 0; i < blocks - 1; i++) {
             std::vector<unsigned char> buffer_a(
                     buffer.begin() + (i * block_size),
                     buffer.begin() + ((i + 1) * block_size));
-            std::vector<unsigned char> buffer_b(
-                    buffer.begin() + ((i + 1) * block_size),
-                    buffer.begin() + ((i + 2) * block_size));
-            total_distance += hamming_distance(buffer_a, buffer_b);
+            for (unsigned int j = i + 1; j < blocks; j++) {
+                std::vector<unsigned char> buffer_b(
+                        buffer.begin() + (j * block_size),
+                        buffer.begin() + ((j + 1) * block_size));
+                total_distance += hamming_distance(buffer_a, buffer_b);
+            }
         }
-        return (float)total_distance / ((buffer.size() / block_size) - 1);
+        // the number of iterations is n choose 2, where n is the number of full
+        // block_size blocks in buffer
+        unsigned int iterations = (blocks * (blocks - 1)) / 2;
+        return (float)total_distance / iterations;
+    }
+
+    // get count of all identical block pairs in buffer
+    // returns -1 if block_size is more than half of the buffer size
+    int count_identical_blocks(
+            const std::vector<unsigned char> &buffer,
+            const unsigned int block_size) {
+        if (buffer.size() / 2 < block_size) {
+            return -1;
+        }
+
+        unsigned int blocks = buffer.size() / block_size;
+        int identical_blocks = 0;
+        for (unsigned int i = 0; i < blocks - 1; i++) {
+            std::vector<unsigned char> buffer_a(
+                    buffer.begin() + (i * block_size),
+                    buffer.begin() + ((i + 1) * block_size));
+            for (unsigned int j = i + 1; j < blocks; j++) {
+                std::vector<unsigned char> buffer_b(
+                        buffer.begin() + (j * block_size),
+                        buffer.begin() + ((j + 1) * block_size));
+                if(hamming_distance(buffer_a, buffer_b) == 0) {
+                    identical_blocks++;
+                }
+            }
+        }
+
+        return identical_blocks;
     }
 }
