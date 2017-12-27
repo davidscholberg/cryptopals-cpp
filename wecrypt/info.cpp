@@ -74,4 +74,26 @@ namespace wecrypt {
 
         return distance;
     }
+
+    // get average hamming distance between pairs of adjacent blocks
+    // returns -1 if block_size is more than half of the buffer size
+    float avg_hamming_distance(
+            const std::vector<unsigned char> &buffer,
+            const unsigned int block_size) {
+        if (buffer.size() / 2 < block_size) {
+            return -1;
+        }
+
+        int total_distance = 0;
+        for (unsigned int i = 0; i < (buffer.size() / block_size) - 1; i++) {
+            std::vector<unsigned char> buffer_a(
+                    buffer.begin() + (i * block_size),
+                    buffer.begin() + ((i + 1) * block_size));
+            std::vector<unsigned char> buffer_b(
+                    buffer.begin() + ((i + 1) * block_size),
+                    buffer.begin() + ((i + 2) * block_size));
+            total_distance += hamming_distance(buffer_a, buffer_b);
+        }
+        return (float)total_distance / ((buffer.size() / block_size) - 1);
+    }
 }

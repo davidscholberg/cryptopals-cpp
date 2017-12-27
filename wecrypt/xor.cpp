@@ -116,17 +116,8 @@ namespace wecrypt {
         // key sizes we're checking.
         float smallest_norm_distance = std::max((int)(buffer.size() / 2), 40) * 8;
         for (unsigned int i = 2; i <= buffer.size() / 2 && i < 40; i++) {
-            int current_distance = 0;
-            for (unsigned int j = 0; j < (buffer.size() / i) - 1; j++) {
-                std::vector<unsigned char> buffer_a(
-                        buffer.begin() + (j * i),
-                        buffer.begin() + ((j + 1) * i));
-                std::vector<unsigned char> buffer_b(
-                        buffer.begin() + ((j + 1) * i),
-                        buffer.begin() + ((j + 2) * i));
-                current_distance += hamming_distance(buffer_a, buffer_b);
-            }
-            float norm_distance = (float)current_distance / ((buffer.size() / (float)i) - 1) / (float)i;
+            float avg_distance = avg_hamming_distance(buffer, i);
+            float norm_distance = avg_distance / (float)i;
             if (norm_distance < smallest_norm_distance) {
                 smallest_norm_distance = norm_distance;
                 key_size_guess = i;
