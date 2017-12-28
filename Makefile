@@ -16,7 +16,8 @@ OBJECTS=\
 		challenges/s01c05-repeating-key-xor.o \
 		challenges/s01c06-break-repeating-key-xor.o \
 		challenges/s01c07-aes-ecb.o \
-		challenges/s01c08-detect-aes-ecb.o
+		challenges/s01c08-detect-aes-ecb.o \
+		challenges/s02c09-pkcs7-padding.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
@@ -25,7 +26,8 @@ CHALLENGE_HEADERS=\
 		challenges/s01c05-repeating-key-xor.hpp \
 		challenges/s01c06-break-repeating-key-xor.hpp \
 		challenges/s01c07-aes-ecb.hpp \
-		challenges/s01c08-detect-aes-ecb.hpp
+		challenges/s01c08-detect-aes-ecb.hpp \
+		challenges/s02c09-pkcs7-padding.hpp
 
 all: cryptopals
 
@@ -76,6 +78,9 @@ s01c07: all
 
 s01c08: all
 	./cryptopals $@ resources/s01c08-hex-strings.txt
+
+s02c09: all
+	./cryptopals $@ "YELLOW SUBMARINE" 20
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;
