@@ -11,6 +11,7 @@
 #include "challenges/s01c07-aes-ecb.hpp"
 #include "challenges/s01c08-detect-aes-ecb.hpp"
 #include "challenges/s02c09-pkcs7-padding.hpp"
+#include "challenges/s02c10-aes-cbc.hpp"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -29,6 +30,7 @@ int main(int argc, char **argv) {
         {s01::c07::challenge_arg, s01::c07::aes_ecb},
         {s01::c08::challenge_arg, s01::c08::detect_aes_ecb},
         {s02::c09::challenge_arg, s02::c09::pkcs7_padding},
+        {s02::c10::challenge_arg, s02::c10::aes_cbc},
     };
 
     auto challenge_func = function_map.find(argv[1]);

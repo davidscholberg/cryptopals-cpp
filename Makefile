@@ -17,7 +17,8 @@ OBJECTS=\
 		challenges/s01c06-break-repeating-key-xor.o \
 		challenges/s01c07-aes-ecb.o \
 		challenges/s01c08-detect-aes-ecb.o \
-		challenges/s02c09-pkcs7-padding.o
+		challenges/s02c09-pkcs7-padding.o \
+		challenges/s02c10-aes-cbc.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
@@ -27,7 +28,8 @@ CHALLENGE_HEADERS=\
 		challenges/s01c06-break-repeating-key-xor.hpp \
 		challenges/s01c07-aes-ecb.hpp \
 		challenges/s01c08-detect-aes-ecb.hpp \
-		challenges/s02c09-pkcs7-padding.hpp
+		challenges/s02c09-pkcs7-padding.hpp \
+		challenges/s02c10-aes-cbc.hpp
 
 all: cryptopals
 
@@ -40,7 +42,7 @@ cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
 utils/utils.o: utils/utils.cpp utils/utils.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp
+wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp wecrypt/xor.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
@@ -81,6 +83,9 @@ s01c08: all
 
 s02c09: all
 	./cryptopals $@ "YELLOW SUBMARINE" 20
+
+s02c10: all
+	./cryptopals $@ resources/s02c10-cipher-text.txt resources/s02c10-key.txt resources/s02c10-iv.txt
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;

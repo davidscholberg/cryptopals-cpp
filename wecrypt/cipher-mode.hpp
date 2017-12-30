@@ -37,6 +37,18 @@ namespace wecrypt {
     extern const encryption_profile aes_pkcs7_encrypt;
     extern const decryption_profile aes_pkcs7_decrypt;
 
+    std::shared_ptr<std::vector<unsigned char>> cbc_encrypt(
+            const encryption_profile &profile,
+            const std::vector<unsigned char> &buffer,
+            const std::vector<unsigned char> &key,
+            const std::vector<unsigned char> &iv);
+
+    std::shared_ptr<std::vector<unsigned char>> cbc_decrypt(
+            const decryption_profile &profile,
+            const std::vector<unsigned char> &buffer,
+            const std::vector<unsigned char> &key,
+            const std::vector<unsigned char> &iv);
+
     std::shared_ptr<std::vector<unsigned char>> ecb_encrypt(
             const encryption_profile &profile,
             const std::vector<unsigned char> &buffer,
