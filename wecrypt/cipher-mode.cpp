@@ -96,7 +96,7 @@ namespace wecrypt {
             prev_ciphertext_block = ciphertext_block;
         }
 
-        bool ok = profile.unpad(*plaintext, profile.block_size);
+        const bool ok = profile.unpad(*plaintext, profile.block_size);
         if (!ok) {
             return nullptr;
         }
@@ -108,12 +108,12 @@ namespace wecrypt {
             const encryption_profile &profile,
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key) {
-        auto padded_buffer = profile.pad(buffer, profile.block_size);
+        const auto padded_buffer = profile.pad(buffer, profile.block_size);
 
         auto ciphertext = std::make_shared<std::vector<unsigned char>>(padded_buffer->size());
 
         for (unsigned int i = 0; i < padded_buffer->size(); i += profile.block_size) {
-            auto ciphertext_block = profile.encrypt(
+            const auto ciphertext_block = profile.encrypt(
                     std::vector<unsigned char>(
                         padded_buffer->begin() + i,
                         padded_buffer->begin() + i + profile.block_size),
@@ -141,7 +141,7 @@ namespace wecrypt {
         auto plaintext = std::make_shared<std::vector<unsigned char>>(buffer.size());
 
         for (unsigned int i = 0; i < buffer.size(); i += profile.block_size) {
-            auto plaintext_block = profile.decrypt(
+            const auto plaintext_block = profile.decrypt(
                     std::vector<unsigned char>(
                         buffer.begin() + i,
                         buffer.begin() + i + profile.block_size),
@@ -155,7 +155,7 @@ namespace wecrypt {
             }
         }
 
-        bool ok = profile.unpad(*plaintext, profile.block_size);
+        const bool ok = profile.unpad(*plaintext, profile.block_size);
         if (!ok) {
             return nullptr;
         }
