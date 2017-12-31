@@ -71,7 +71,7 @@ namespace utils {
                 hex << " ";
                 hex << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)bytes[offset];
 
-                if(bytes[offset] < 32) {
+                if(bytes[offset] < 32 || bytes[offset] > 126) {
                     ascii << '.';
                 } else {
                     ascii << bytes[offset];
