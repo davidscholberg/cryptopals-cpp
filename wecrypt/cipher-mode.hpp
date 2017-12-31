@@ -58,6 +58,19 @@ namespace wecrypt {
             const decryption_profile &profile,
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key);
+
+    std::shared_ptr<std::vector<unsigned char>> random_ecb_cbc_encrypt(
+            const encryption_profile &profile,
+            const std::vector<unsigned char> &buffer);
+
+    enum cipher_mode {
+        error,
+        cbc,
+        ecb
+    };
+
+    cipher_mode random_ecb_cbc_encrypt_oracle(
+            const encryption_profile &profile);
 }
 
 #endif // CIPHER_MODE_HPP_

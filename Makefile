@@ -6,6 +6,7 @@ OBJECTS=\
 		wecrypt/cipher-mode.o \
 		wecrypt/info.o \
 		wecrypt/padding.o \
+		wecrypt/random.o \
 		wecrypt/string-conversion.o \
 		wecrypt/xor.o \
 		utils/utils.o \
@@ -18,7 +19,8 @@ OBJECTS=\
 		challenges/s01c07-aes-ecb.o \
 		challenges/s01c08-detect-aes-ecb.o \
 		challenges/s02c09-pkcs7-padding.o \
-		challenges/s02c10-aes-cbc.o
+		challenges/s02c10-aes-cbc.o \
+		challenges/s02c11-ecb-cbc-oracle.o
 CHALLENGE_HEADERS=\
 		challenges/s01c01-hex-to-base64.hpp \
 		challenges/s01c02-fixed-xor.hpp \
@@ -29,7 +31,8 @@ CHALLENGE_HEADERS=\
 		challenges/s01c07-aes-ecb.hpp \
 		challenges/s01c08-detect-aes-ecb.hpp \
 		challenges/s02c09-pkcs7-padding.hpp \
-		challenges/s02c10-aes-cbc.hpp
+		challenges/s02c10-aes-cbc.hpp \
+		challenges/s02c11-ecb-cbc-oracle.hpp
 
 all: cryptopals
 
@@ -42,7 +45,7 @@ cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
 utils/utils.o: utils/utils.cpp utils/utils.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp wecrypt/xor.hpp
+wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/xor.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
@@ -51,7 +54,7 @@ wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
+wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
@@ -86,6 +89,9 @@ s02c09: all
 
 s02c10: all
 	./cryptopals $@ resources/s02c10-cipher-text.txt resources/s02c10-key.txt resources/s02c10-iv.txt
+
+s02c11: all
+	./cryptopals $@
 
 clean:
 	find . -name '*.o' -exec rm '{}' \;
