@@ -17,18 +17,18 @@ int s02::c11::ecb_cbc_oracle(int argc, char **argv) {
         return 1;
     }
 
-    auto cipher_mode = wecrypt::random_ecb_cbc_encrypt_oracle(
+    auto cipher_mode = wecrypt::attack_ecb_cbc_encrypt_oracle(
             wecrypt::aes_pkcs7_encrypt);
     switch (cipher_mode) {
         case wecrypt::cipher_mode::cbc:
-            std::cout << "oracle guessed cbc" << std::endl;
+            std::cout << "detected from oracle: cbc" << std::endl;
             break;
         case wecrypt::cipher_mode::ecb:
-            std::cout << "oracle guessed ecb" << std::endl;
+            std::cout << "detected from oracle: ecb" << std::endl;
             break;
         case wecrypt::cipher_mode::error:
-            std::cout << "error with oracle" << std::endl;
-            break;
+            std::cerr << "error with oracle attack" << std::endl;
+            return 2;
     }
 
     return 0;

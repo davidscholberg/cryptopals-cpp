@@ -59,7 +59,7 @@ namespace wecrypt {
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key);
 
-    std::shared_ptr<std::vector<unsigned char>> random_ecb_cbc_encrypt(
+    std::shared_ptr<std::vector<unsigned char>> ecb_cbc_encrypt_oracle(
             const encryption_profile &profile,
             const std::vector<unsigned char> &buffer);
 
@@ -69,7 +69,8 @@ namespace wecrypt {
         ecb
     };
 
-    cipher_mode random_ecb_cbc_encrypt_oracle(
+    // detects cipher mode used by ecb_cbc_encrypt_oracle
+    cipher_mode attack_ecb_cbc_encrypt_oracle(
             const encryption_profile &profile);
 }
 

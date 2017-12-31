@@ -165,7 +165,7 @@ namespace wecrypt {
         return plaintext;
     }
 
-    std::shared_ptr<std::vector<unsigned char>> random_ecb_cbc_encrypt(
+    std::shared_ptr<std::vector<unsigned char>> ecb_cbc_encrypt_oracle(
             const encryption_profile &profile,
             const std::vector<unsigned char> &buffer) {
         rng_ints rng_padding_size(5, 10);
@@ -196,7 +196,8 @@ namespace wecrypt {
         return cbc_encrypt(profile, padded_buffer, *key_buffer, *iv);
     }
 
-    cipher_mode random_ecb_cbc_encrypt_oracle(
+    // detects cipher mode used by ecb_cbc_encrypt_oracle
+    cipher_mode attack_ecb_cbc_encrypt_oracle(
             const encryption_profile &profile) {
         // The minimum number of bytes prepended by random_ecb_cbc_encrypt is
         // 5, and the max is 10. Therefore, we need a 43 byte buffer of
@@ -204,7 +205,7 @@ namespace wecrypt {
         // padded buffer.
         std::vector<unsigned char> buffer(43, 0);
 
-        auto ciphertext = random_ecb_cbc_encrypt(profile, buffer);
+        auto ciphertext = ecb_cbc_encrypt_oracle(profile, buffer);
 
         switch(count_identical_blocks(*ciphertext, profile.block_size)) {
             case 0:
