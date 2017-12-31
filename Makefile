@@ -5,6 +5,7 @@ OBJECTS=\
 		wecrypt/aes.o \
 		wecrypt/cipher-mode.o \
 		wecrypt/info.o \
+		wecrypt/oracle.o \
 		wecrypt/padding.o \
 		wecrypt/random.o \
 		wecrypt/string-conversion.o \
@@ -45,7 +46,10 @@ cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
 utils/utils.o: utils/utils.cpp utils/utils.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/xor.hpp
+wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp wecrypt/xor.hpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
+wecrypt/oracle.o: wecrypt/oracle.cpp wecrypt/oracle.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/random.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
@@ -54,7 +58,7 @@ wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
+wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/oracle.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp

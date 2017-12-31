@@ -6,6 +6,12 @@
 #include <vector>
 
 namespace wecrypt {
+    enum cipher_mode {
+        error,
+        cbc,
+        ecb
+    };
+
     typedef std::shared_ptr<std::vector<unsigned char>> encrypt_function(
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key);
@@ -58,20 +64,6 @@ namespace wecrypt {
             const decryption_profile &profile,
             const std::vector<unsigned char> &buffer,
             const std::vector<unsigned char> &key);
-
-    std::shared_ptr<std::vector<unsigned char>> ecb_cbc_encrypt_oracle(
-            const encryption_profile &profile,
-            const std::vector<unsigned char> &buffer);
-
-    enum cipher_mode {
-        error,
-        cbc,
-        ecb
-    };
-
-    // detects cipher mode used by ecb_cbc_encrypt_oracle
-    cipher_mode attack_ecb_cbc_encrypt_oracle(
-            const encryption_profile &profile);
 }
 
 #endif // CIPHER_MODE_HPP_
