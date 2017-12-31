@@ -1,5 +1,4 @@
-CC=g++
-CFLAGS=-Wall -std=c++14 -I .
+CXXFLAGS=-Wall -std=c++14 -I .
 OBJECTS=\
 		cryptopals.o \
 		wecrypt/aes.o \
@@ -38,31 +37,31 @@ CHALLENGE_HEADERS=\
 all: cryptopals
 
 cryptopals: $(OBJECTS)
-	$(CC) $^ -o $@
+	$(LINK.cc) $^ -o $@
 
 cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 utils/utils.o: utils/utils.cpp utils/utils.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp wecrypt/xor.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 wecrypt/oracle.o: wecrypt/oracle.cpp wecrypt/oracle.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/random.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/oracle.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
 	touch $@
 
 %.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(COMPILE.cc) $< -o $@
 
 s01c01: all
 	./cryptopals $@ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
