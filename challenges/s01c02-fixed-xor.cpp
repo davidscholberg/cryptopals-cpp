@@ -2,7 +2,8 @@
 #include <string>
 
 #include "challenges/s01c02-fixed-xor.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/string-conversion.hpp"
+#include "wecrypt/xor.hpp"
 
 const std::string s01::c02::challenge_arg("s01c02");
 

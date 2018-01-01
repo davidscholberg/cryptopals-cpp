@@ -1,68 +1,41 @@
-CC=g++
-CFLAGS=-Wall -std=c++14 -I .
-OBJECTS=\
-		cryptopals.o \
-		wecrypt/aes.o \
-		wecrypt/cipher-mode.o \
-		wecrypt/info.o \
-		wecrypt/oracle.o \
-		wecrypt/padding.o \
-		wecrypt/random.o \
-		wecrypt/string-conversion.o \
-		wecrypt/xor.o \
-		utils/utils.o \
-		challenges/s01c01-hex-to-base64.o \
-		challenges/s01c02-fixed-xor.o \
-		challenges/s01c03-single-byte-xor.o \
-		challenges/s01c04-detect-single-byte-xor.o \
-		challenges/s01c05-repeating-key-xor.o \
-		challenges/s01c06-break-repeating-key-xor.o \
-		challenges/s01c07-aes-ecb.o \
-		challenges/s01c08-detect-aes-ecb.o \
-		challenges/s02c09-pkcs7-padding.o \
-		challenges/s02c10-aes-cbc.o \
-		challenges/s02c11-ecb-cbc-oracle.o
-CHALLENGE_HEADERS=\
-		challenges/s01c01-hex-to-base64.hpp \
-		challenges/s01c02-fixed-xor.hpp \
-		challenges/s01c03-single-byte-xor.hpp \
-		challenges/s01c04-detect-single-byte-xor.hpp \
-		challenges/s01c05-repeating-key-xor.hpp \
-		challenges/s01c06-break-repeating-key-xor.hpp \
-		challenges/s01c07-aes-ecb.hpp \
-		challenges/s01c08-detect-aes-ecb.hpp \
-		challenges/s02c09-pkcs7-padding.hpp \
-		challenges/s02c10-aes-cbc.hpp \
-		challenges/s02c11-ecb-cbc-oracle.hpp
+CXXFLAGS = -Wall -std=c++14 -I .
+
+SRCDIRS := \
+	challenges \
+	utils \
+	wecrypt
+
+SRCS := $(wildcard *.cpp $(patsubst %,%/*.cpp,$(SRCDIRS)))
+OBJS := $(patsubst %.cpp,%.o,$(SRCS))
+
+DEPDIR := .d
+DEPS := $(patsubst %.cpp,$(DEPDIR)/%.d,$(SRCS))
+$(shell for i in $(SRCDIRS); do mkdir -p $(DEPDIR)/$$i; done >/dev/null)
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
+
+COMPILE.cpp = $(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
 all: cryptopals
 
-cryptopals: $(OBJECTS)
-	$(CC) $^ -o $@
+cryptopals: $(OBJS)
+	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) $(OUTPUT_OPTION)
 
-cryptopals.o: cryptopals.cpp $(CHALLENGE_HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJS): %.o: %.cpp $(DEPDIR)/%.d
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+	$(POSTCOMPILE)
 
-utils/utils.o: utils/utils.cpp utils/utils.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+$(DEPS): ;
+.PRECIOUS: $(DEPS)
 
-wecrypt/cipher-mode.o: wecrypt/cipher-mode.cpp wecrypt/cipher-mode.hpp wecrypt/aes.hpp wecrypt/padding.hpp wecrypt/xor.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+include $(DEPS)
 
-wecrypt/oracle.o: wecrypt/oracle.cpp wecrypt/oracle.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/random.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+clean:
+	rm -f cryptopals $(OBJS)
+	rm -rf $(DEPDIR)
 
-wecrypt/xor.o: wecrypt/xor.cpp wecrypt/xor.hpp wecrypt/info.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
-
-wecrypt/%.o: wecrypt/%.cpp wecrypt/%.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
-
-wecrypt/wecrypt.hpp: wecrypt/aes.hpp wecrypt/cipher-mode.hpp wecrypt/info.hpp wecrypt/oracle.hpp wecrypt/padding.hpp wecrypt/random.hpp wecrypt/string-conversion.hpp wecrypt/xor.hpp
-	touch $@
-
-%.o: %.cpp %.hpp wecrypt/wecrypt.hpp utils/utils.hpp
-	$(CC) $(CFLAGS) -c $< -o $@
+retab:
+	find . -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;
 
 s01c01: all
 	./cryptopals $@ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
@@ -96,10 +69,3 @@ s02c10: all
 
 s02c11: all
 	./cryptopals $@
-
-clean:
-	find . -name '*.o' -exec rm '{}' \;
-	rm -f cryptopals
-
-retab:
-	find . -name '*.[ch]pp' -type f -exec bash -c 'expand -i -t 4 "{}" > ./not_a_filename && mv ./not_a_filename "{}"' \;

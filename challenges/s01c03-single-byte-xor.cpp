@@ -2,7 +2,8 @@
 #include <string>
 
 #include "challenges/s01c03-single-byte-xor.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/string-conversion.hpp"
+#include "wecrypt/xor.hpp"
 
 const std::string s01::c03::challenge_arg("s01c03");
 

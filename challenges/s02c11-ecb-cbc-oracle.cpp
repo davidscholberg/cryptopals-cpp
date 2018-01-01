@@ -2,8 +2,8 @@
 #include <string>
 
 #include "challenges/s02c11-ecb-cbc-oracle.hpp"
-#include "utils/utils.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/cipher-mode.hpp"
+#include "wecrypt/oracle.hpp"
 
 const std::string s02::c11::challenge_arg("s02c11");
 

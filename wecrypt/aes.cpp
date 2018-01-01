@@ -1,8 +1,5 @@
-#include <algorithm>
 #include <memory>
 #include <vector>
-
-#include <stdint.h>
 
 #include "wecrypt/aes.hpp"
 
