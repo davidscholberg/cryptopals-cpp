@@ -1,9 +1,12 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "challenges/s01c08-detect-aes-ecb.hpp"
 #include "utils/utils.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/aes.hpp"
+#include "wecrypt/info.hpp"
+#include "wecrypt/string-conversion.hpp"
 
 const std::string s01::c08::challenge_arg("s01c08");
 

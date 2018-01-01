@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "challenges/s02c09-pkcs7-padding.hpp"
 #include "utils/utils.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/padding.hpp"
 
 const std::string s02::c09::challenge_arg("s02c09");
 

@@ -2,7 +2,7 @@
 #include <string>
 
 #include "challenges/s01c01-hex-to-base64.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/string-conversion.hpp"
 
 const std::string s01::c01::challenge_arg("s01c01");
 

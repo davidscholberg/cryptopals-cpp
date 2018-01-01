@@ -1,11 +1,12 @@
 #include <algorithm>
-#include <memory>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "challenges/s01c07-aes-ecb.hpp"
 #include "utils/utils.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/cipher-mode.hpp"
+#include "wecrypt/string-conversion.hpp"
 
 const std::string s01::c07::challenge_arg("s01c07");
 

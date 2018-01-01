@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "challenges/s01c04-detect-single-byte-xor.hpp"
 #include "utils/utils.hpp"
-#include "wecrypt/wecrypt.hpp"
+#include "wecrypt/string-conversion.hpp"
+#include "wecrypt/xor.hpp"
 
 const std::string s01::c04::challenge_arg("s01c04");
 
