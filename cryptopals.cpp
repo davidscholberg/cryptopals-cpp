@@ -13,6 +13,7 @@
 #include "challenges/s02c09-pkcs7-padding.hpp"
 #include "challenges/s02c10-aes-cbc.hpp"
 #include "challenges/s02c11-ecb-cbc-oracle.hpp"
+#include "challenges/s02c12-ecb-oracle.hpp"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -33,6 +34,7 @@ int main(int argc, char **argv) {
         {s02::c09::challenge_arg, s02::c09::pkcs7_padding},
         {s02::c10::challenge_arg, s02::c10::aes_cbc},
         {s02::c11::challenge_arg, s02::c11::ecb_cbc_oracle},
+        {s02::c12::challenge_arg, s02::c12::ecb_oracle},
     };
 
     auto challenge_func = function_map.find(argv[1]);

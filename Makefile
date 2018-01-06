@@ -69,3 +69,6 @@ s02c10: all
 
 s02c11: all
 	./cryptopals $@
+
+s02c12: all
+	./cryptopals $@
