@@ -1,21 +1,16 @@
 #include <algorithm>
 #include <exception>
+#include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <list>
 
 #include "profile/profile.hpp"
 
 namespace profile {
-    std::string encode(const profile &p) {
-        std::stringstream encoded_profile;
-        encoded_profile << "email=" << p.email;
-        encoded_profile << "&uid=" << p.uid;
-        encoded_profile << "&role=" << p.role;
-        return encoded_profile.str();
-    }
-
-    profile decode(const std::string &profile_str) {
+    // throws std::invalid_argument on parse errors
+    profile::profile(const std::string &profile_str) {
         // get list of fields
         std::stringstream profile_stream(profile_str);
         std::list<std::string> fields;
@@ -23,66 +18,90 @@ namespace profile {
             fields.push_back(field);
         }
 
-        profile p = {};
-        p.parse_error = true;
-
         for (auto field = fields.begin(); field != fields.end(); field++) {
             // get key val pair
             std::stringstream field_stream(*field);
             std::string key;
             if (!std::getline(field_stream, key, '=')) {
-                return p;
+                throw std::invalid_argument("profile parse error");
             }
             std::string val;
             if (!std::getline(field_stream, val, '=')) {
-                return p;
+                throw std::invalid_argument("profile parse error");
             }
             std::string bad;
             if (std::getline(field_stream, bad, '=')) {
-                return p;
+                throw std::invalid_argument("profile parse error");
             }
 
             if (key == "email") {
-                if (p.email.length() != 0) {
-                    return p;
+                if (email.length() != 0) {
+                    throw std::invalid_argument("profile parse error");
                 }
-                p.email = val;
+                email = val;
             } else if (key == "uid") {
-                if (p.uid != 0) {
-                    return p;
+                if (uid != 0) {
+                    throw std::invalid_argument("profile parse error");
                 }
                 try {
-                    p.uid = std::stoi(val);
+                    uid = std::stoi(val);
                 } catch (std::exception& e) {
-                    return p;
+                    throw std::invalid_argument("profile parse error");
                 }
             } else if (key == "role") {
-                if (p.role.length() != 0) {
-                    return p;
+                if (role.length() != 0) {
+                    throw std::invalid_argument("profile parse error");
                 }
-                p.role = val;
+                role = val;
             } else {
-                return p;
+                throw std::invalid_argument("profile parse error");
             }
         }
 
-        if (p.email.length() == 0 || p.uid == 0 || p.role.length() == 0) {
-            return p;
+        if (email.length() == 0 || uid == 0 || role.length() == 0) {
+            throw std::invalid_argument("profile parse error");
         }
-
-        p.parse_error = false;
-        return p;
     }
 
-    profile profile_for(std::string email) {
+    profile::profile(
+            const std::string &email,
+            unsigned int uid,
+            const std::string &role) : email(email), uid(uid), role(role) {
         // remove special chars (using erase-remove idiom)
-        email.erase(
+        this->email.erase(
             std::remove_if(
-                email.begin(),
-                email.end(),
+                this->email.begin(),
+                this->email.end(),
                 [](char c){return c == '&' || c == '=';}),
-            email.end());
+            this->email.end());
+        this->role.erase(
+            std::remove_if(
+                this->role.begin(),
+                this->role.end(),
+                [](char c){return c == '&' || c == '=';}),
+            this->role.end());
+    }
 
-        return {email, 10, "user", false};
+    std::string profile::encode() const {
+        std::stringstream encoded_profile;
+        encoded_profile << "email=" << email;
+        encoded_profile << "&uid=" << uid;
+        encoded_profile << "&role=" << role;
+        return encoded_profile.str();
+    }
+
+    // returns nullptr on parse error
+    std::shared_ptr<profile> decode(const std::string &profile_str) {
+        try {
+            auto p = std::make_shared<profile>(profile_str);
+            return p;
+        } catch (std::invalid_argument &e) {
+            return nullptr;
+        }
+    }
+
+    // returns profile for the given email with uid 10 and role user.
+    profile profile_for(const std::string &email) {
+        return profile(email, 10, "user");
     }
 }
