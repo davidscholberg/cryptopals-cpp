@@ -1,15 +1,15 @@
-#ifndef PROFILE_HPP_
-#define PROFILE_HPP_
+#ifndef USER_PROFILE_HPP_
+#define USER_PROFILE_HPP_
 
 #include <memory>
 #include <string>
 
-namespace profile {
-    class profile {
+namespace user_profile {
+    class user_profile {
         public:
             // throws std::invalid_argument on parse errors
-            profile(const std::string &profile_str);
-            profile(
+            user_profile(const std::string &profile_str);
+            user_profile(
                     const std::string &email,
                     unsigned int uid,
                     const std::string &role);
@@ -21,10 +21,10 @@ namespace profile {
     };
 
     // returns nullptr on parse error
-    std::shared_ptr<profile> decode(const std::string &profile_str);
+    std::shared_ptr<user_profile> decode(const std::string &profile_str);
 
-    // returns profile for the given email with uid 10 and role user.
-    profile profile_for(const std::string &email);
+    // returns user_profile for the given email with uid 10 and role user.
+    user_profile user_profile_for(const std::string &email);
 }
 
-#endif // PROFILE_HPP_
+#endif // USER_PROFILE_HPP_

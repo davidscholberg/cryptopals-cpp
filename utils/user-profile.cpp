@@ -6,11 +6,11 @@
 #include <string>
 #include <list>
 
-#include "profile/profile.hpp"
+#include "utils/user-profile.hpp"
 
-namespace profile {
+namespace user_profile {
     // throws std::invalid_argument on parse errors
-    profile::profile(const std::string &profile_str) {
+    user_profile::user_profile(const std::string &profile_str) {
         // get list of fields
         std::stringstream profile_stream(profile_str);
         std::list<std::string> fields;
@@ -63,7 +63,7 @@ namespace profile {
         }
     }
 
-    profile::profile(
+    user_profile::user_profile(
             const std::string &email,
             unsigned int uid,
             const std::string &role) : email(email), uid(uid), role(role) {
@@ -82,7 +82,7 @@ namespace profile {
             this->role.end());
     }
 
-    std::string profile::encode() const {
+    std::string user_profile::encode() const {
         std::stringstream encoded_profile;
         encoded_profile << "email=" << email;
         encoded_profile << "&uid=" << uid;
@@ -91,17 +91,17 @@ namespace profile {
     }
 
     // returns nullptr on parse error
-    std::shared_ptr<profile> decode(const std::string &profile_str) {
+    std::shared_ptr<user_profile> decode(const std::string &profile_str) {
         try {
-            auto p = std::make_shared<profile>(profile_str);
+            auto p = std::make_shared<user_profile>(profile_str);
             return p;
         } catch (std::invalid_argument &e) {
             return nullptr;
         }
     }
 
-    // returns profile for the given email with uid 10 and role user.
-    profile profile_for(const std::string &email) {
-        return profile(email, 10, "user");
+    // returns user_profile for the given email with uid 10 and role user.
+    user_profile user_profile_for(const std::string &email) {
+        return user_profile(email, 10, "user");
     }
 }
