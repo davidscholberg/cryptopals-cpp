@@ -14,6 +14,7 @@
 #include "challenges/s02c10-aes-cbc.hpp"
 #include "challenges/s02c11-ecb-cbc-oracle.hpp"
 #include "challenges/s02c12-ecb-oracle.hpp"
+#include "challenges/s02c13-ecb-cut-and-paste.hpp"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -35,6 +36,7 @@ int main(int argc, char **argv) {
         {s02::c10::challenge_arg, s02::c10::aes_cbc},
         {s02::c11::challenge_arg, s02::c11::ecb_cbc_oracle},
         {s02::c12::challenge_arg, s02::c12::ecb_oracle},
+        {s02::c13::challenge_arg, s02::c13::ecb_cut_and_paste},
     };
 
     auto challenge_func = function_map.find(argv[1]);

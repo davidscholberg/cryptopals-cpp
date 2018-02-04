@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "utils/user-profile.hpp"
 #include "wecrypt/cipher-mode.hpp"
 
 namespace wecrypt {
@@ -30,6 +31,16 @@ namespace wecrypt {
             const std::vector<unsigned char> &ciphertext,
             unsigned int block_size,
             unsigned char *byte);
+
+    std::shared_ptr<std::vector<unsigned char>> user_profile_encrypt_oracle(
+            const encryption_profile &profile,
+            const std::vector<unsigned char> &key,
+            const std::string &email);
+
+    std::shared_ptr<user_profile::user_profile> user_profile_decrypt(
+            const decryption_profile &profile,
+            const std::vector<unsigned char> &key,
+            const std::vector<unsigned char> &buffer);
 }
 
 #endif // ORACLE_HPP_

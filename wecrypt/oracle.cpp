@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "utils/user-profile.hpp"
 #include "wecrypt/cipher-mode.hpp"
 #include "wecrypt/info.hpp"
 #include "wecrypt/oracle.hpp"
@@ -184,5 +185,26 @@ namespace wecrypt {
             }
         }
         return false;
+    }
+
+    std::shared_ptr<std::vector<unsigned char>> user_profile_encrypt_oracle(
+            const encryption_profile &profile,
+            const std::vector<unsigned char> &key,
+            const std::string &email) {
+        const std::string profile_str = user_profile::user_profile_for(email).encode();
+        const std::vector<unsigned char> profile_buffer(profile_str.begin(), profile_str.end());
+        return ecb_encrypt(profile, profile_buffer, key);
+    }
+
+    std::shared_ptr<user_profile::user_profile> user_profile_decrypt(
+            const decryption_profile &profile,
+            const std::vector<unsigned char> &key,
+            const std::vector<unsigned char> &buffer) {
+        const auto profile_buffer = ecb_decrypt(profile, buffer, key);
+        if (!profile_buffer) {
+            return nullptr;
+        }
+        std::string profile_str(profile_buffer->begin(), profile_buffer->end());
+        return user_profile::decode(profile_str);
     }
 }
